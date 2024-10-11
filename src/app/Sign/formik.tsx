@@ -1,9 +1,11 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Formik, Field, Form, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import { useAuth } from "@/hooks/useAuth";
-import { InputRegisterType } from "@/types/fetchTypes";
+import { InputLoginType, InputRegisterType } from "@/types/fetchTypes";
 import { InputLogin, InputRegister } from "./inputs";
 import classNames from "classnames";
+import { toastPromise } from "@/libs/Sonner";
 
 export default function AuthForm({ isLogin }: { isLogin: boolean }) {
   const { login, register, loading } = useAuth();
@@ -43,17 +45,45 @@ export default function AuthForm({ isLogin }: { isLogin: boolean }) {
 
   const handleSubmit = async (values: InputRegisterType) => {
     if (isLogin) {
+      toastPromise(handleLogin(values), "Sesión iniciada", "Iniciando sesión");
+    } else {
+      toastPromise(
+        handleRegister(values),
+        "Registrado correctamente",
+        "Registrandote"
+      );
+    }
+  };
+  const handleLogin = async (values: InputLoginType) => {
+    try {
       const result = await login({
         email: values.email,
         password: values.password,
       });
-      if (result) console.log("Usuario logueado:", result);
-    } else {
-      const result = await register(values);
-      if (result) console.log("Usuario registrado:", result);
+      if (result) {
+        console.log("Usuario logueado:", result);
+      } else {
+        throw new Error("Verifica tus credenciales");
+      }
+    } catch (error: any) {
+      throw new Error(error.message);
     }
   };
 
+  const handleRegister = async (values: InputRegisterType) => {
+    try {
+      const result = await register(values);
+      if (result) {
+        toastPromise(
+          handleLogin(values),
+          "Sesión iniciada",
+          "Iniciando sesión"
+        );
+      } else throw new Error("No pudimos registrarte");
+    } catch (error: any) {
+      throw new Error(error.message);
+    }
+  };
   return (
     <Formik
       initialValues={initialValues}
@@ -62,7 +92,10 @@ export default function AuthForm({ isLogin }: { isLogin: boolean }) {
     >
       {({ isSubmitting, errors, touched }) => (
         <Form className="flex flex-col gap-4 items-center">
-          <section className="flex flex-row gap-4 items-center">
+          <section
+            className="flex flex-row gap-4 items-center"
+            key={"Principal"}
+          >
             <section
               className={classNames(
                 "flex flex-row gap-4 transition-all duration-1000 transform",
@@ -71,15 +104,13 @@ export default function AuthForm({ isLogin }: { isLogin: boolean }) {
                   "translate-x-full opacity-0": !isLogin,
                 }
               )}
+              key={"loginFather"}
             >
-              <section className="flex flex-col gap-2">
+              <section className="flex flex-col gap-2" key={"login"}>
                 {InputLogin.map((input) => {
                   return (
-                    <>
-                      <div
-                        key={input.id}
-                        className="relative border border-main rounded-lg cursor-pointer"
-                      >
+                    <div key={input.id} className="flex flex-col gap-2">
+                      <div className="relative border border-main rounded-lg cursor-pointer">
                         <Field
                           name={input.name}
                           type={input.type}
@@ -97,12 +128,12 @@ export default function AuthForm({ isLogin }: { isLogin: boolean }) {
 
                       <div
                         className={classNames(
-                          "bg-transparent border border-main rounded-lg italic text-center relative top-0 right-0 transform transition-all duration-1000 p-1 text-sm",
+                          "bg-transparent rounded-lg italic text-main animate-pulse  text-center relative top-0 right-0 transform transition-all duration-1000 p-1 text-sm",
                           {
-                            "translate-y-0 opacity-100":
+                            "translate-y-0 border border-main opacity-100":
                               errors[input.name as keyof typeof errors] &&
                               touched[input.name as keyof typeof errors], // Mostrar con animación si hay error y ha sido tocado.
-                            "-translate-y-10   opacity-0":
+                            "-translate-y-10  border-none opacity-0":
                               !errors[input.name as keyof typeof errors] ||
                               !touched[input.name as keyof typeof errors], // Ocultar si no hay error o no ha sido tocado.
                           }
@@ -110,7 +141,7 @@ export default function AuthForm({ isLogin }: { isLogin: boolean }) {
                       >
                         <ErrorMessage name={input.name} />
                       </div>
-                    </>
+                    </div>
                   );
                 })}
               </section>
@@ -124,15 +155,13 @@ export default function AuthForm({ isLogin }: { isLogin: boolean }) {
                   "translate-x-full opacity-0": isLogin,
                 }
               )}
+              key={"registerFather"}
             >
-              <section className="flex flex-col gap-2">
+              <section className="flex flex-col gap-2" key={"register"}>
                 {InputRegister.map((input) => {
                   return (
-                    <>
-                      <div
-                        key={input.id}
-                        className="relative border border-main rounded-lg cursor-pointer group"
-                      >
+                    <div className="flex flex-col gap-2" key={input.id}>
+                      <div className="relative border border-main rounded-lg cursor-pointer group">
                         <Field
                           name={input.name}
                           type={input.type}
@@ -162,7 +191,7 @@ export default function AuthForm({ isLogin }: { isLogin: boolean }) {
                       >
                         <ErrorMessage name={input.name} />
                       </div>
-                    </>
+                    </div>
                   );
                 })}
               </section>

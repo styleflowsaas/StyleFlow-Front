@@ -3,6 +3,7 @@ import localFont from "next/font/local";
 import "./globals.css";
 
 import ThemeToggle from "@/components/buttons/DarkMode";
+import { Toaster } from "sonner";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -30,6 +31,14 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
+        <Toaster
+          position="top-center"
+          expand={false}
+          richColors
+          theme="system"
+          closeButton={true}
+          pauseWhenPageIsHidden={true}
+        />
         <ThemeToggle />
         {children}
       </body>
