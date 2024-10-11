@@ -1,8 +1,6 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
-
-import ThemeToggle from "@/components/buttons/DarkMode";
 import { Toaster } from "sonner";
 
 const geistSans = localFont({
@@ -39,7 +37,7 @@ export default function RootLayout({
           closeButton={true}
           pauseWhenPageIsHidden={true}
         />
-        <ThemeToggle />
+
         {children}
       </body>
     </html>
