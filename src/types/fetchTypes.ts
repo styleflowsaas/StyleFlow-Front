@@ -5,7 +5,7 @@ export type InputLoginType = {
 
 export type InputRegisterType = InputLoginType & {
   name: string;
-  dni: string;
+  dni: string | number;
   passwordConfirm: string;
   startDate?: Date;
 };

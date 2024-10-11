@@ -41,7 +41,8 @@ export const useAuth = () => {
   const register = async (dataInput: InputRegisterType) => {
     setLoading(true);
     setError(null);
-
+    dataInput.dni = Number(dataInput.dni);
+    dataInput.startDate = new Date();
     try {
       const response = await fetch(REGISTER_URL, {
         method: "POST",

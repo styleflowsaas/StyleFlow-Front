@@ -29,7 +29,20 @@ export const InputRegister = [
     id: "dni",
     children: "D.N.I.",
   },
-  ...InputLogin,
+  {
+    name: "email",
+    type: "email",
+    id: "email1",
+    placeholder: "usuario@gmail.com",
+    children: "Email",
+  },
+  {
+    name: "password",
+    type: "password",
+    placeholder: "*********",
+    id: "password1",
+    children: "Contraseña",
+  },
 
   {
     name: "passwordConfirm",
