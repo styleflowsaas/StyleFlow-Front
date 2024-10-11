@@ -1,0 +1,38 @@
+/* global.css */
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Irish+Grover&family=Merriweather:wght@300;400;700;900&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
+
+
+body {
+  @apply transition-colors duration-300 ease-in-out;
+
+  font-family: 'Montserrat', sans-serif;
+}
+
+
+html {
+  @apply bg-fondo-ligth text-texto-ligth;
+}
+
+
+html.dark {
+  @apply bg-fondo-dark text-texto-dark;
+}
+
+
+
+
+.logo {
+  font-family: 'Irish Grover', cursive;
+  text-shadow: 1px 1px 1px #c9c4c4,
+    1px 1px 0 #c9c3c3;
+
+}
+
+.logo-bg {
+  box-shadow: 2px 2px 5px #541313
+}
