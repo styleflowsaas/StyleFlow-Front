@@ -27,8 +27,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased `}
       >
+        {children}
         <Toaster
           position="top-center"
           expand={false}
@@ -37,8 +38,6 @@ export default function RootLayout({
           closeButton={true}
           pauseWhenPageIsHidden={true}
         />
-
-        {children}
       </body>
     </html>
   );

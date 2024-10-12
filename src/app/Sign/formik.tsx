@@ -116,7 +116,7 @@ export default function AuthForm({ isLogin }: { isLogin: boolean }) {
                           type={input.type}
                           placeholder={input.placeholder}
                           id={input.id}
-                          className="block px-2.5 pb-2.5 pt-4 w-full text-sm text-gray-900 bg-transparent rounded-lg border-1 border-gray-300 appearance-none dark:text-texto-ligth dark:border-gray-600 dark:focus:border-main focus:outline-none focus:ring-0 focus:border-main peer"
+                          className="block p-1 w-full text-sm text-gray-900 bg-transparent rounded-lg border-1 border-gray-300 appearance-none dark:text-texto-ligth dark:border-gray-600 dark:focus:border-main focus:outline-none focus:ring-0 focus:border-main peer"
                         />
                         <label
                           htmlFor={input.id}

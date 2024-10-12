@@ -2,8 +2,9 @@ import { InputLoginType, InputRegisterType } from "@/types/fetchTypes";
 import { useState } from "react";
 
 // Definir las URLs de autenticación
-const LOGIN_URL = "https://styleflow-backend.onrender.com/auth/signin";
-const REGISTER_URL = "https://styleflow-backend.onrender.com/auth/signup";
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
+const LOGIN_URL = process.env.NEXT_PUBLIC_AUTH_LOGIN;
+const REGISTER_URL = process.env.NEXT_PUBLIC_AUTH_REGISTER;
 
 export const useAuth = () => {
   const [loading, setLoading] = useState(false);
@@ -15,7 +16,7 @@ export const useAuth = () => {
     setError(null);
 
     try {
-      const response = await fetch(LOGIN_URL, {
+      const response = await fetch(`${API_URL}${LOGIN_URL}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -44,7 +45,7 @@ export const useAuth = () => {
     dataInput.dni = Number(dataInput.dni);
     dataInput.startDate = new Date();
     try {
-      const response = await fetch(REGISTER_URL, {
+      const response = await fetch(`${API_URL}${REGISTER_URL}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
