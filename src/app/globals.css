@@ -1,10 +1,8 @@
-/* global.css */
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-@import url('https://fonts.googleapis.com/css2?family=Irish+Grover&family=Merriweather:wght@300;400;700;900&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
+/* @import url('https://fonts.googleapis.com/css2?family=Irish+Grover&family=Merriweather:wght@300;400;700;900&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap'); */
 
 
 body {
@@ -20,7 +18,7 @@ html {
 
 
 html.dark {
-  @apply bg-fondo-dark text-texto-dark;
+  @apply text-texto-dark;
 }
 
 
