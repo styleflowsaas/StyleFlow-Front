@@ -26,8 +26,10 @@ const NavBar: React.FC = () => {
   return (
     <nav
       className={`flex flex-col  ${isCollapsed ? "w-0 " : "w-[15vw]"} ${
-        isOpen ? "w-[50vw] fixed" : "w-0 max-w-[15vw]"
-      } gap-2 items-center justify-between bg-secundario dark:bg-fondo-dark p-4 h-screen sticky top-0 transition-all duration-300 z-20`}
+        isOpen
+          ? "w-[50vw] fixed bg-secundario dark:bg-fondo-dark"
+          : "w-0 max-w-[15vw]"
+      } gap-2 items-center justify-between md:bg-secundario md:dark:bg-fondo-dark p-4 h-screen fixed md:sticky top-0 transition-all duration-300 z-20`}
     >
       {/* Botón para colapsar la barra */}
       <div className="hidden md:block fixed z-30 -top-1 -left-1">
@@ -88,7 +90,9 @@ const NavBar: React.FC = () => {
       </ul>
 
       <button
-        className={`text-base md:text-xs ${isCollapsed ? "hidden" : ""}`}
+        className={`text-base md:text-xs ${isCollapsed ? "hidden" : ""} ${
+          isOpen ? "block" : "hidden"
+        }`}
         onClick={handleLogOut}
       >
         Salir

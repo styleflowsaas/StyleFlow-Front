@@ -6,8 +6,8 @@ const ProductSearchBar: React.FC<{
   setSearchQuery: Dispatch<SetStateAction<string>>;
 }> = ({ setTable, setSearchQuery }) => {
   return (
-    <nav className="flex flex-row gap-4 w-[90%] mx-auto rounded-lg bg-secundario p-1 justify-around items-center dark:bg-fondo-dark sticky top-1 z-10">
-      <h2 className="cursor-default">Productos</h2>
+    <nav className="flex flex-col md:flex-row gap-2 md:gap-4 w-full md:w-[90%] mx-auto rounded-lg bg-secundario p-1 justify-around items-center dark:bg-fondo-dark sticky top-1 z-10">
+      <h2 className="cursor-default hidden md:block">Productos</h2>
       <div className="rounded-lg text-[.8em] relative">
         <label htmlFor="search" className="absolute top-0.5 left-1  ">
           <MdSearch />

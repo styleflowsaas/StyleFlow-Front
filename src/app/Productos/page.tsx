@@ -75,7 +75,7 @@ const Productos: React.FC = () => {
         setTable={setViewTable}
         setSearchQuery={setSearchQuery}
       />
-      <section className=" flex flex-wrap gap-1 items-center justify-center w-[100%]">
+      <section className=" flex flex-col gap-1 items-center justify-center w-[100%]">
         {viewTable ? (
           <ProductTable data={filteredProducts} />
         ) : (
