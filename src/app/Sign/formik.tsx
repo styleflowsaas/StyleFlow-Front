@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+"use client";
 import { Formik, Field, Form, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import { useAuth } from "@/hooks/useAuth";
@@ -7,9 +8,10 @@ import { InputLogin, InputRegister } from "./inputs";
 import classNames from "classnames";
 import { toastPromise } from "@/libs/Sonner";
 
+import { useRouter } from "next/navigation";
 export default function AuthForm({ isLogin }: { isLogin: boolean }) {
   const { login, register, loading } = useAuth();
-
+  const router = useRouter();
   const validationSchema = Yup.object({
     name: !isLogin
       ? Yup.string().required("El nombre es obligatorio")
@@ -19,12 +21,17 @@ export default function AuthForm({ isLogin }: { isLogin: boolean }) {
           .required("El D.N.I. es obligatorio")
           .matches(/^\d+$/, "El D.N.I. debe ser numérico")
       : Yup.string(),
-    email: Yup.string()
-      .email("Email inválido")
-      .required("El email es obligatorio"),
+    email: !isLogin
+      ? Yup.string().email("Email inválido").required("El email es obligatorio")
+      : Yup.string(),
     password: Yup.string()
       .min(8, "Al menos 8 caracteres")
+      .matches(
+        /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/,
+        "Al menos una Mayuscula, minuscula, numero y caracter especial"
+      )
       .required("La contraseña es obligatoria"),
+
     passwordConfirm: !isLogin
       ? Yup.string()
           .oneOf(
@@ -61,7 +68,8 @@ export default function AuthForm({ isLogin }: { isLogin: boolean }) {
         password: values.password,
       });
       if (result) {
-        console.log("Usuario logueado:", result);
+        document.cookie = `token-sf=${result.token}`;
+        router.push("/");
       } else {
         throw new Error("Verifica tus credenciales");
       }
@@ -91,22 +99,25 @@ export default function AuthForm({ isLogin }: { isLogin: boolean }) {
       onSubmit={handleSubmit}
     >
       {({ isSubmitting, errors, touched }) => (
-        <Form className="flex flex-col gap-4 items-center">
+        <Form className="flex flex-col gap-2 items-center w-full">
           <section
-            className="flex flex-row gap-4 items-center"
+            className="flex flex-col justify-center gap-2 items-center "
             key={"Principal"}
           >
             <section
               className={classNames(
-                "flex flex-row gap-4 transition-all duration-1000 transform",
+                "flex flex-col md:flex-row gap-4 transition-all duration-1000 transform",
                 {
-                  "translate-x-1/2 opacity-100": isLogin,
-                  "translate-x-full opacity-0": !isLogin,
+                  "md:translate-x-1/4 opacity-100 ": isLogin,
+                  "-translate-x-0 opacity-100 ": !isLogin,
                 }
               )}
               key={"loginFather"}
             >
-              <section className="flex flex-col gap-2" key={"login"}>
+              <section
+                className="flex flex-col gap-2 w-full md:max-w-[50%]"
+                key={"login"}
+              >
                 {InputLogin.map((input) => {
                   return (
                     <div key={input.id} className="flex flex-col gap-2">
@@ -116,11 +127,11 @@ export default function AuthForm({ isLogin }: { isLogin: boolean }) {
                           type={input.type}
                           placeholder={input.placeholder}
                           id={input.id}
-                          className="block p-1 w-full text-sm text-gray-900 bg-transparent rounded-lg border-1 border-gray-300 appearance-none dark:text-texto-ligth dark:border-gray-600 dark:focus:border-main focus:outline-none focus:ring-0 focus:border-main peer"
+                          className={`block p-1 w-full text-[.8rem] text-gray-900 bg-transparent rounded-lg border-1 border-gray-300 appearance-none dark:text-texto-ligth dark:border-gray-600 dark:focus:border-main focus:outline-none focus:ring-0 focus:border-main peer`}
                         />
                         <label
                           htmlFor={input.id}
-                          className="absolute font-semibold text-sm text-gray-500 dark:text-gray-900 duration-300 group-focus-within:transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-fondo-ligth dark:bg-secundario px-2 peer-focus:px-2 peer-focus:text-main peer-focus:dark:text-main peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 ml-1 peer-placeholder-shown:h-[90%] peer-placeholder-shown:w-[90%] size-auto peer-focus:size-auto flex items-center cursor-pointer"
+                          className="absolute font-semibold text-[.8rem] text-gray-500 dark:text-gray-900 duration-300 group-focus-within:transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-fondo-ligth dark:bg-secundario px-2 peer-focus:px-2 peer-focus:text-main peer-focus:dark:text-main peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 ml-1 peer-placeholder-shown:h-[90%] peer-placeholder-shown:w-[90%] size-auto peer-focus:size-auto flex items-center cursor-pointer"
                         >
                           {input.children}
                         </label>
@@ -128,7 +139,7 @@ export default function AuthForm({ isLogin }: { isLogin: boolean }) {
 
                       <div
                         className={classNames(
-                          "bg-transparent rounded-lg italic text-main animate-pulse  text-center relative top-0 right-0 transform transition-all duration-1000 p-1 text-sm",
+                          "bg-transparent rounded-lg italic text-main animate-pulse  text-center relative top-0 right-0 transform transition-all duration-1000 p-1 text-[.5rem]",
                           {
                             "translate-y-0 border border-main opacity-100":
                               errors[input.name as keyof typeof errors] &&
@@ -139,61 +150,65 @@ export default function AuthForm({ isLogin }: { isLogin: boolean }) {
                           }
                         )}
                       >
-                        <ErrorMessage name={input.name} />
+                        <p className="text-wrap ">
+                          <ErrorMessage name={input.name} />
+                        </p>
                       </div>
                     </div>
                   );
                 })}
               </section>
-            </section>
-
-            <section
-              className={classNames(
-                "flex flex-row gap-4 items-center transition-all duration-1000 transform",
-                {
-                  "-translate-x-1/2 opacity-100": !isLogin,
-                  "translate-x-full opacity-0": isLogin,
-                }
-              )}
-              key={"registerFather"}
-            >
-              <section className="flex flex-col gap-2" key={"register"}>
-                {InputRegister.map((input) => {
-                  return (
-                    <div className="flex flex-col gap-2" key={input.id}>
-                      <div className="relative border border-main rounded-lg cursor-pointer group">
-                        <Field
-                          name={input.name}
-                          type={input.type}
-                          placeholder={input.placeholder}
-                          id={input.id}
-                          className="block px-2.5 pb-2.5 pt-4 w-full text-sm text-gray-900 bg-transparent rounded-lg border-1 border-gray-300 appearance-none dark:text-texto-ligth dark:border-gray-600 dark:focus:border-main focus:outline-none focus:ring-0 focus:border-main peer"
-                        />
-                        <label
-                          htmlFor={input.id}
-                          className="absolute font-semibold text-sm text-gray-500 dark:text-gray-900 duration-300 group-focus-within:transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-fondo-ligth dark:bg-secundario px-2 peer-focus:px-2 peer-focus:text-main peer-focus:dark:text-main peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 ml-1 peer-placeholder-shown:h-[90%] peer-placeholder-shown:w-[90%] size-auto peer-focus:size-auto flex items-center cursor-pointer"
+              <section
+                className={classNames(
+                  "flex flex-row gap-4 items-center transition-all duration-1000 transform",
+                  {
+                    "translate-x-0 opacity-1000": !isLogin,
+                    "translate-x-full opacity-0 ": isLogin,
+                  }
+                )}
+                key={"registerFather"}
+              >
+                <section
+                  className="flex flex-col gap-2 w-full md:min-w-[50%]"
+                  key={"register"}
+                >
+                  {InputRegister.map((input) => {
+                    return (
+                      <div className="flex flex-col gap-2" key={input.id}>
+                        <div className="relative border border-main rounded-lg cursor-pointer group">
+                          <Field
+                            name={input.name}
+                            type={input.type}
+                            placeholder={input.placeholder}
+                            id={input.id}
+                            className={`block p-1 w-full text-[.8rem] text-gray-900 bg-transparent rounded-lg border-1 border-gray-300 appearance-none dark:text-texto-ligth dark:border-gray-600 dark:focus:border-main focus:outline-none focus:ring-0 focus:border-main peer `}
+                          />
+                          <label
+                            htmlFor={input.id}
+                            className="absolute font-semibold text-[.8rem] text-gray-500 dark:text-gray-900 duration-300 group-focus-within:transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-fondo-ligth dark:bg-secundario peer-focus:px-2 peer-focus:text-main peer-focus:dark:text-main peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 ml-1 peer-placeholder-shown:h-[90%] peer-placeholder-shown:w-[90%] size-auto peer-focus:size-auto flex items-center cursor-pointer"
+                          >
+                            {input.children}
+                          </label>
+                        </div>
+                        <div
+                          className={classNames(
+                            "bg-transparent border border-main text-main rounded-lg italic text-center relative top-0 right-0 transform transition-all duration-1000 p-1 text-[.5rem] opacity-0 z-20",
+                            {
+                              "translate-y-0 opacity-100":
+                                errors[input.name as keyof typeof errors] &&
+                                touched[input.name as keyof typeof errors], // Mostrar con animación si hay error y ha sido tocado.
+                              "-translate-y-10 opacity-0 border-none":
+                                !errors[input.name as keyof typeof errors] ||
+                                !touched[input.name as keyof typeof errors], // Ocultar si no hay error o no ha sido tocado.
+                            }
+                          )}
                         >
-                          {input.children}
-                        </label>
+                          <ErrorMessage name={input.name} />
+                        </div>
                       </div>
-                      <div
-                        className={classNames(
-                          "bg-transparent border border-main text-main rounded-lg italic text-center relative top-0 right-0 transform transition-all duration-1000 p-1 text-sm opacity-0 z-20",
-                          {
-                            "translate-y-0 opacity-100":
-                              errors[input.name as keyof typeof errors] &&
-                              touched[input.name as keyof typeof errors], // Mostrar con animación si hay error y ha sido tocado.
-                            "-translate-y-10 opacity-0 border-none":
-                              !errors[input.name as keyof typeof errors] ||
-                              !touched[input.name as keyof typeof errors], // Ocultar si no hay error o no ha sido tocado.
-                          }
-                        )}
-                      >
-                        <ErrorMessage name={input.name} />
-                      </div>
-                    </div>
-                  );
-                })}
+                    );
+                  })}
+                </section>
               </section>
             </section>
           </section>
@@ -201,7 +216,7 @@ export default function AuthForm({ isLogin }: { isLogin: boolean }) {
           <button
             type="submit"
             disabled={loading || isSubmitting}
-            className="p-2 bg-main text-texto-dark rounded-lg hover:scale-105 duration-300 w-2/3 hover:bg-green-600"
+            className="p-1 text-[.8rem] bg-main text-texto-dark rounded-lg hover:scale-105 duration-300 w-full md:w-1/2  hover:bg-green-600"
           >
             {loading || isSubmitting
               ? "Cargando..."
