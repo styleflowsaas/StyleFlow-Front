@@ -90,8 +90,8 @@ const NavBar: React.FC = () => {
       </ul>
 
       <button
-        className={`text-base md:text-xs ${isCollapsed ? "hidden" : ""} ${
-          isOpen ? "block" : "hidden"
+        className={`text-base md:text-xs  ${isOpen ? "" : "hidden md:block"} ${
+          isCollapsed ? "hidden" : ""
         }`}
         onClick={handleLogOut}
       >
