@@ -1,25 +1,7 @@
 "use client";
+import { Invoice, Product } from "@/types/VentasTypes";
 import React, { useState } from "react";
 import { MdDelete, MdPersonAdd } from "react-icons/md";
-
-interface Product {
-  id: number;
-  barcode: string;
-  name: string;
-  price: number;
-  quantity: number;
-  discount: number;
-}
-
-interface Invoice {
-  id: number;
-  products: Product[];
-  clientSearch: string;
-  invoiceNumber: number;
-  clientType: string;
-  generalDiscount: number;
-  paymentMethod: string;
-}
 
 export default function GeneradorFactura() {
   const [invoices, setInvoices] = useState<Invoice[]>([
