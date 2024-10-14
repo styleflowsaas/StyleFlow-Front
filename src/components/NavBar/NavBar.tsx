@@ -4,13 +4,14 @@ import Image from "next/image";
 import DarkModeToggle from "../buttons/Dark";
 import Link from "next/link";
 import HamburgerButton from "../buttons/BurgerButton";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { toastInfo } from "@/libs/Sonner";
 
 const NavBar: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isCollapsed, setIsCollapsed] = useState(false);
   const pathname = usePathname();
+  const router = useRouter();
   if (pathname === "/Sign") {
     return null;
   }
@@ -21,7 +22,9 @@ const NavBar: React.FC = () => {
   const handleLogOut = () => {
     toastInfo("Sesión Cerrada");
     localStorage.clear();
-    document.cookie = "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+    document.cookie =
+      "token-sf=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+    router.push("/Sign");
   };
   return (
     <nav
