@@ -20,7 +20,7 @@ const ProductTable: React.FC<ProductTableProps> = ({ data }) => {
       </thead>
       <tbody className="table-hover">
         {data.map((product) => (
-          <tr key={product.id}>
+          <tr key={product.id} className="hoverTd">
             <td className="text-left">{product.name}</td>
             <td className="text-left">{product.brand}</td>
             <td className="text-left">{product.description}</td>
