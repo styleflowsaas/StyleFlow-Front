@@ -140,34 +140,33 @@ export default function GeneradorFactura() {
   };
 
   return (
-    <div className="w-full mx-auto p-2 bg-secundario dark:bg-fondo-dark  text-[.5rem] shadow-lg rounded-lg dark:text-texto-dark min-h-[96vh]">
-      <div className="mb-1">
-        <div className="flex justify-between items-center ">
-          <h2 className="text-base font-bold">Punto de Ventas</h2>
-          <div className="space-x-2">
-            <select
-              value={currentInvoiceId.toString()}
-              onChange={(e) => setCurrentInvoiceId(parseInt(e.target.value))}
-              className="p-2 border rounded-lg bg-fondo-ligth text-texto-ligth"
-            >
-              {invoices.map((invoice) => (
-                <option key={invoice.id} value={invoice.id.toString()}>
-                  Venta Nº {invoice.invoiceNumber}
-                </option>
-              ))}
-            </select>
-            <button
-              onClick={addNewInvoice}
-              className="px-4 py-2 border-collapse  rounded hover:border border-black dark:hover:border dark:hover:border-white"
-            >
-              Nueva Venta
-            </button>
-          </div>
+    <div className="w-full mx-auto p-2 dark:bg-[#1b1e24] text-texto-ligth dark:text-texto-dark text-[.5rem] shadow-lg rounded-lg  min-h-[96vh] flex flex-col justify-between">
+      <div className="flex justify-between items-center">
+        <h2 className="text-base font-bold">Punto de Ventas</h2>
+        <div className="flex items-center gap-2">
+          <select
+            value={currentInvoiceId.toString()}
+            onChange={(e) => setCurrentInvoiceId(parseInt(e.target.value))}
+            className="p-[2px] px-1 border rounded bg-fondo-ligth text-texto-ligth text-[.5rem]"
+          >
+            {invoices.map((invoice) => (
+              <option key={invoice.id} value={invoice.id.toString()}>
+                Venta Nº {invoice.invoiceNumber}
+              </option>
+            ))}
+          </select>
+          <button
+            onClick={addNewInvoice}
+            className="p-2 border-collapse outline outline-1 rounded hover:bg-secundario-ligth hover:dark:bg-secundario hover:scale-105"
+          >
+            Nueva Venta
+          </button>
         </div>
       </div>
+
       <div className="space-y-2">
         <div className="flex items-center space-x-2">
-          <button className="text-xl hover:scale-105">
+          <button className="text-xl hover:scale-105 hover:text-green-600">
             <MdPersonAdd />
           </button>
           <div className="relative flex flex-grow items-center">
@@ -182,127 +181,127 @@ export default function GeneradorFactura() {
                   clientSearch: e.target.value,
                 })
               }
-              className="w-full p-1 pl-8 border dark:border-texto-ligth rounded"
+              className="w-[85%] p-[.1rem] pl-8 border dark:border-texto-ligth rounded text-sm"
             />
           </div>
         </div>
 
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between mx-auto">
           <select
             value={currentInvoice.clientType}
             onChange={(e) =>
               updateInvoice({ ...currentInvoice, clientType: e.target.value })
             }
-            className="p-1 border dark:border-texto-ligth rounded dark:text-texto-ligth"
+            className="p-[2px] border dark:border-texto-ligth rounded dark:text-texto-ligth text-[.5rem]"
           >
             <option value="consumidor-final">Consumidor Final</option>
             <option value="responsable-inscripto">Responsable Inscripto</option>
           </select>
           <p className="text-sm">Factura Nº: {currentInvoice.invoiceNumber}</p>
         </div>
-
-        <table className="w-full border-collapse text-[.1rem]">
-          <thead>
-            <tr>
-              <th className="border dark:border-texto-dark text-[.5rem] py-1">
-                Código de Barras
-              </th>
-              <th className="border dark:border-texto-dark text-[.5rem]">
-                Producto
-              </th>
-              <th className="border dark:border-texto-dark text-[.5rem]">
-                Precio
-              </th>
-              <th className="border dark:border-texto-dark text-[.5rem]">
-                Cantidad
-              </th>
-              <th className="border dark:border-texto-dark  text-[.5rem]">
-                Descuento (%)
-              </th>
-              <th className="border dark:border-texto-dark text-[.5rem]">
-                Subtotal
-              </th>
-              <th className="border dark:border-texto-dark text-[.5rem]">
-                Acción
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {currentInvoice.products.map((product) => (
-              <tr key={product.id}>
-                <td className="border px-1">
-                  <input
-                    type="text"
-                    autoFocus
-                    value={product.barcode}
-                    onChange={(e) =>
-                      updateProduct(product.id, "barcode", e.target.value)
-                    }
-                    className="w-full p-1 border rounded dark:text-texto-ligth"
-                  />
-                </td>
-                <td className="border">
-                  <p>{product.name}</p>
-                </td>
-                <td className="border">
-                  <p>$ {product.price}</p>
-                </td>
-                <td className="border">
-                  <input
-                    type="number"
-                    value={product.quantity}
-                    onChange={(e) =>
-                      updateProduct(
-                        product.id,
-                        "quantity",
-                        parseInt(e.target.value)
-                      )
-                    }
-                    className=" p-1 border rounded  dark:text-texto-ligth"
-                  />
-                </td>
-                <td className="border">
-                  <input
-                    type="number"
-                    value={product.discount}
-                    onChange={(e) =>
-                      updateProduct(
-                        product.id,
-                        "discount",
-                        parseFloat(e.target.value)
-                      )
-                    }
-                    className=" p-1 border rounded  dark:text-texto-ligth"
-                  />
-                </td>
-                <td className="border">
-                  ${calculateSubtotal(product).toFixed(2)}
-                </td>
-                <td className="border p-2 text-center">
-                  <button
-                    onClick={() => removeProduct(product.id)}
-                    className="p-1 bg-red-500 text-white rounded hover:bg-red-600"
-                  >
-                    <MdDelete />
-                  </button>
-                </td>
+        <div className="min-h-[20vh]">
+          <table className="w-full border-collapse">
+            <thead>
+              <tr>
+                <th className="border dark:border-texto-dark text-[.5rem] w-[15vw]">
+                  Código de Barras
+                </th>
+                <th className="border dark:border-texto-dark text-[.5rem]">
+                  Producto
+                </th>
+                <th className="border dark:border-texto-dark text-[.5rem]">
+                  Precio
+                </th>
+                <th className="border dark:border-texto-dark text-[.5rem]">
+                  Cantidad
+                </th>
+                <th className="border dark:border-texto-dark  text-[.5rem]">
+                  Desc. (%)
+                </th>
+                <th className="border dark:border-texto-dark text-[.5rem]">
+                  Subtotal
+                </th>
+                <th className="border dark:border-texto-dark text-[.5rem]">
+                  Acción
+                </th>
               </tr>
-            ))}
-          </tbody>
-        </table>
-
+            </thead>
+            <tbody>
+              {currentInvoice.products.map((product) => (
+                <tr key={product.id}>
+                  <td className="border p-[0px]">
+                    <input
+                      type="text"
+                      autoFocus
+                      value={product.barcode}
+                      onChange={(e) =>
+                        updateProduct(product.id, "barcode", e.target.value)
+                      }
+                      className="w-full h-full border-none dark:text-texto-ligth text-[.5rem]"
+                    />
+                  </td>
+                  <td className="border text-center p-[0px]">
+                    <p>{product.name}</p>
+                  </td>
+                  <td className="border text-center p-[0px] w-[10vw]">
+                    <p>$ {product.price}</p>
+                  </td>
+                  <td className="border w-[10vw] p-[0px]">
+                    <input
+                      type="number"
+                      min={0}
+                      value={product.quantity}
+                      onChange={(e) =>
+                        updateProduct(
+                          product.id,
+                          "quantity",
+                          parseInt(e.target.value)
+                        )
+                      }
+                      className="w-full h-full border-none dark:text-texto-ligth text-[.5rem]"
+                    />
+                  </td>
+                  <td className="border p-[0px] w-[10vw] ">
+                    <input
+                      type="number"
+                      min={0}
+                      max={100}
+                      value={product.discount}
+                      onChange={(e) =>
+                        updateProduct(
+                          product.id,
+                          "discount",
+                          parseFloat(e.target.value)
+                        )
+                      }
+                      className="w-full h-full border-none dark:text-texto-ligth text-center text-[.5rem]"
+                    />
+                  </td>
+                  <td className="border p-[0px] text-center w-[10vw]">
+                    ${calculateSubtotal(product).toFixed(2)}
+                  </td>
+                  <td className="border  text-center">
+                    <button
+                      onClick={() => removeProduct(product.id)}
+                      className="p-1 bg-red-500 text-white rounded hover:bg-red-600 hover:scale-105"
+                    >
+                      <MdDelete />
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
         <button
           onClick={addProduct}
-          className="w-full px-4 py-2 bg-green-600 dark:bg-green-700 text-white rounded hover:bg-green-700 dark:hover:bg-green-600"
+          className="px-2 py-2 bg-green-600 dark:bg-green-700 text-white rounded hover:bg-green-700 dark:hover:bg-green-600"
         >
           + Agregar Producto
         </button>
 
         <div className="flex items-center justify-between">
           <div className="flex flex-row gap-2 items-center">
-            <label htmlFor="general-discount" className="font-medium">
-              Descuento General (%)
-            </label>
             <input
               id="general-discount"
               type="number"
@@ -315,8 +314,11 @@ export default function GeneradorFactura() {
                   generalDiscount: parseFloat(e.target.value),
                 })
               }
-              className="w-24 p-1 border rounded  dark:text-texto-ligth"
+              className=" border rounded p-[0px] text-center dark:text-texto-ligth text-[.5rem]"
             />
+            <label htmlFor="general-discount" className="font-medium">
+              Descuento General (%)
+            </label>
           </div>
           <p className="text-right text-lg font-semibold">
             Total: ${calculateTotal().toFixed(2)}
@@ -329,7 +331,7 @@ export default function GeneradorFactura() {
           onChange={(e) =>
             updateInvoice({ ...currentInvoice, paymentMethod: e.target.value })
           }
-          className="p-2 border rounded dark:text-texto-ligth"
+          className="p-[2px] px-1 border rounded dark:text-texto-ligth text-[.5rem]"
         >
           <option value="">Seleccionar medio de pago</option>
           <option value="efectivo">Efectivo</option>

@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 import { MdOutlineEdit, MdAdd } from "react-icons/md";
 export interface IProduct {
   id: number;
@@ -10,9 +11,13 @@ export interface IProduct {
   description?: string;
   category?: string;
 }
+
 const ProductCard: React.FC<IProduct> = (data) => {
   return (
-    <article className="flex flex-col gap-1 justify-evenly items-center rounded-md bg-secundario-ligth dark:bg-fondo-dark w-1/4 text-sm transition-all duration-500 shadow-2xl">
+    <Link
+      href={`/Productos/${data.id}`}
+      className="flex flex-col gap-1 justify-evenly items-center rounded-md bg-secundario-ligth dark:bg-fondo-dark w-1/3 md:w-1/4 text-sm transition-all duration-500 shadow-2xl"
+    >
       <div className="bg-white rounded w-[80%] my-2 py-7 flex items-center relative justify-center">
         <Image
           src={data.img}
@@ -40,7 +45,7 @@ const ProductCard: React.FC<IProduct> = (data) => {
           </button>
         </div>
       </div>
-    </article>
+    </Link>
   );
 };
 
