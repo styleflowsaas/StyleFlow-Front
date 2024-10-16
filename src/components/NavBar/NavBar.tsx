@@ -58,13 +58,15 @@ const NavBar: React.FC = () => {
             />
           </svg>
         </button>
-        <Image
-          src={"/logoDark.svg"}
-          alt="logo"
-          width={100}
-          height={100}
-          className={`w-full ${isOpen ? "" : "hidden md:block"}`}
-        />
+        <div className="dark:bg-white p-[1px] rounded-full">
+          <Image
+            src={"/logoDark.svg"}
+            alt="logo"
+            width={100}
+            height={100}
+            className={` ${isOpen ? "" : "hidden md:block"}`}
+          />
+        </div>
       </div>
 
       <ul

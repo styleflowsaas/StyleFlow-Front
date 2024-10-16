@@ -1,6 +1,7 @@
 import Link from "next/link";
-import { IProduct } from "../Cards/ProductCard";
+
 import "./ProductTable.css";
+import { IProduct } from "@/types/basicTypes";
 interface ProductTableProps {
   data: IProduct[];
 }

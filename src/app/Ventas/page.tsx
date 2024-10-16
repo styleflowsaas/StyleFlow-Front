@@ -1,6 +1,6 @@
 "use client";
 import { Invoice, Product } from "@/types/VentasTypes";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { MdDelete, MdPersonAdd } from "react-icons/md";
 
 export default function GeneradorFactura() {
@@ -139,9 +139,13 @@ export default function GeneradorFactura() {
     setCurrentInvoiceId(invoices[updatedInvoices.length - 1].id);
   };
 
+  useEffect(() => {
+    //TODO cargar usuarios, medios de pagos, Nro de factura y productos
+  }, []);
+
   return (
-    <div className="w-full mx-auto p-2 dark:bg-[#1b1e24] text-texto-ligth dark:text-texto-dark text-[.5rem] shadow-lg rounded-lg  min-h-[96vh] flex flex-col justify-between">
-      <div className="flex justify-between items-center">
+    <div className="w-full mx-auto  dark:bg-[#1b1e24] text-texto-ligth dark:text-texto-dark text-[.5rem] shadow-lg rounded-lg  min-h-[96vh] flex flex-col justify-between">
+      <div className="flex justify-between items-center rounded-t-lg bg-secundario dark:bg-fondo-dark p-1">
         <h2 className="text-base font-bold">Punto de Ventas</h2>
         <div className="flex items-center gap-2">
           <select
@@ -164,7 +168,7 @@ export default function GeneradorFactura() {
         </div>
       </div>
 
-      <div className="space-y-2">
+      <div className="space-y-2 p-1">
         <div className="flex items-center space-x-2">
           <button className="text-xl hover:scale-105 hover:text-green-600">
             <MdPersonAdd />
@@ -192,7 +196,7 @@ export default function GeneradorFactura() {
             onChange={(e) =>
               updateInvoice({ ...currentInvoice, clientType: e.target.value })
             }
-            className="p-[2px] border dark:border-texto-ligth rounded dark:text-texto-ligth text-[.5rem]"
+            className="p-[2px] border dark:border-texto-ligth rounded dark:text-texto-ligth text-[.5rem] cursor-pointer"
           >
             <option value="consumidor-final">Consumidor Final</option>
             <option value="responsable-inscripto">Responsable Inscripto</option>
@@ -295,12 +299,12 @@ export default function GeneradorFactura() {
         </div>
         <button
           onClick={addProduct}
-          className="px-2 py-2 bg-green-600 dark:bg-green-700 text-white rounded hover:bg-green-700 dark:hover:bg-green-600"
+          className="px-2 py-2 mx-1 bg-green-600 dark:bg-green-700 text-white rounded hover:bg-green-700 dark:hover:bg-green-600"
         >
           + Agregar Producto
         </button>
 
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between px-1">
           <div className="flex flex-row gap-2 items-center">
             <input
               id="general-discount"
@@ -325,15 +329,15 @@ export default function GeneradorFactura() {
           </p>
         </div>
       </div>
-      <div className=" flex justify-between">
+      <div className="p-1 rounded-b-lg flex justify-between bg-secundario dark:bg-fondo-dark">
         <select
           value={currentInvoice.paymentMethod}
           onChange={(e) =>
             updateInvoice({ ...currentInvoice, paymentMethod: e.target.value })
           }
-          className="p-[2px] px-1 border rounded dark:text-texto-ligth text-[.5rem]"
+          className="p-[1px] px-1 border rounded dark:text-texto-ligth text-[.5rem] cursor-pointer"
         >
-          <option value="">Seleccionar medio de pago</option>
+          <option value="">Medio de pago</option>
           <option value="efectivo">Efectivo</option>
           <option value="tarjeta">Tarjeta</option>
           <option value="transferencia">Transferencia</option>

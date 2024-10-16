@@ -1,3 +1,4 @@
+import { Dropdown } from "flowbite-react";
 import { Dispatch, SetStateAction } from "react";
 import { MdQrCode, MdAddCircle, MdApps, MdSearch } from "react-icons/md";
 
@@ -20,7 +21,17 @@ const ProductSearchBar: React.FC<{
         />
       </div>
       <div className="flex flex-row gap-2">
-        <button className="hover:scale-110 text-[.8em]">Filtrar</button>
+        <div className="max-h-[80%] text-[.8em]">
+          <Dropdown
+            className="hover:scale-110 text-[.5em]"
+            label="Filtrar"
+            size="xs"
+          >
+            <Dropdown.Item>Calzados</Dropdown.Item>
+            <Dropdown.Item>Vestimenta</Dropdown.Item>
+            <Dropdown.Item>Accesorios</Dropdown.Item>
+          </Dropdown>
+        </div>
         <button className="hover:scale-110">
           <MdQrCode />
         </button>
