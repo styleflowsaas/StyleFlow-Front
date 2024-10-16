@@ -22,12 +22,12 @@ const ProductTable: React.FC<ProductTableProps> = ({ data }) => {
         <tbody className="table-hover">
           {data.map((product) => (
             <tr key={product.id} className="hoverTd">
-              <td className="text-left">{product.name}</td>
-              <td className="text-left">{product.brand}</td>
-              <td className="text-left">{product.description}</td>
-              <td className="text-left">{product.category}</td>
-              <td className="text-left">$ {product.price}</td>
-              <td className="text-left">
+              <td className="text-left p-1">{product.name}</td>
+              <td className="text-left p-1">{product.brand}</td>
+              <td className="text-left p-1">{product.description}</td>
+              <td className="text-left p-1">{product.category}</td>
+              <td className="text-left p-1">$ {product.price}</td>
+              <td className="text-left p-1">
                 <Link href={`/products/${product.id}`}>Ver Imagen</Link>
               </td>
             </tr>
@@ -37,9 +37,9 @@ const ProductTable: React.FC<ProductTableProps> = ({ data }) => {
       <table className="md:hidden">
         <thead>
           <tr className="shadow-lg">
-            <th className="text-left">Producto</th>
-            <th className="text-left">Precio</th>
-            <th className="text-left">Acción</th>
+            <th className="text-left p-1">Producto</th>
+            <th className="text-left p-1">Precio</th>
+            <th className="text-left p-1">Acción</th>
           </tr>
         </thead>
         <tbody className="table-hover">
