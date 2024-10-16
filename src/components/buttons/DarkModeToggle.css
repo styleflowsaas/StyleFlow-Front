@@ -13,12 +13,9 @@ input {
   font: 1em Fredoka, sans-serif;
 }
 
-/* body {
-  color: var(--fg);
-  height: 100vh;
-  display: grid;
-  place-items: center;
-} */
+input :checked {
+  background-image: url('');
+}
 
 /* Default */
 .theme {

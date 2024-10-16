@@ -20,16 +20,16 @@ export const HamburgerButton: React.FC<HamburgerButtonProps> = ({
         initial={false}
         animate={isCollapse ? "closed" : "open"}
         onClick={() => toggle(!isCollapse)}
-        className="relative h-10 w-10 rounded-full bg-white/0 transition-colors "
+        className="relative h-10 w-10 rounded-full transition-colors "
       >
         <motion.span
           variants={VARIANTS.top}
-          className="absolute h-0.5 w-5 bg-white"
+          className="absolute h-0.5 w-5 bg-fondo-dark dark:bg-fondo-ligth"
           style={{ y: "-50%", left: "50%", x: "-50%", top: "35%" }}
         />
         <motion.span
           variants={VARIANTS.middle}
-          className="absolute h-0.5 w-5 bg-white"
+          className="absolute h-0.5 w-5 bg-fondo-dark dark:bg-fondo-ligth"
           style={{ left: "50%", x: "-50%", top: "50%", y: "-50%" }}
         />
       </motion.button>

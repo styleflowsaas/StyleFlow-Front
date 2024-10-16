@@ -14,7 +14,7 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en">
-      <body className={` antialiased flex flex-row`}>
+      <body className={`merriweather-regular antialiased flex flex-row`}>
         {/* Barra de navegación fija */}
         <NavBar />
         {/* Contenido dinámico */}
