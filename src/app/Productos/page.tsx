@@ -8,7 +8,7 @@ import { IProduct } from "@/types/basicTypes";
 
 import { useState } from "react";
 
-const mockProducts: IProduct[] = [
+export const mockProducts: IProduct[] = [
   {
     id: 1,
     name: "Airmax",

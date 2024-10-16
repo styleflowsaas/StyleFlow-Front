@@ -2,18 +2,23 @@
 import { Invoice, Product } from "@/types/VentasTypes";
 import React, { useEffect, useState } from "react";
 import { MdDelete, MdPersonAdd } from "react-icons/md";
+import { mockProducts } from "../Productos/page";
+import { IProduct } from "@/types/basicTypes";
+import { toastError } from "@/libs/Sonner";
 
 export default function GeneradorFactura() {
+  const [products, setProducts] = useState<IProduct[]>(mockProducts);
+  const [clients, setClients] = useState<{ name: string; id: number }[]>();
   const [invoices, setInvoices] = useState<Invoice[]>([
     {
       id: 1,
       products: [
         {
-          id: Date.now(),
-          barcode: "",
+          id: 1,
           name: "",
+          codeBar: "",
           price: 0,
-          quantity: 1,
+          stock: 1,
           discount: 0,
         },
       ],
@@ -37,44 +42,74 @@ export default function GeneradorFactura() {
     );
   };
 
-  const addProduct = () => {
-    const updatedInvoice = {
-      ...currentInvoice,
-      products: [
-        ...currentInvoice.products,
-        {
-          id: Date.now(),
-          barcode: "",
-          name: "",
-          price: 0,
-          quantity: 1,
-          discount: 0,
-        },
-      ],
-    };
-    updateInvoice(updatedInvoice);
+  // 1. Búsqueda de Cliente
+  const handleClientSearch = (searchTerm: string) => {
+    const client = clients?.find((client) =>
+      client.name.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+    if (client) {
+      updateInvoice({ ...currentInvoice, clientSearch: client.name });
+    } else {
+      toastError("Cliente no encontrado");
+    }
   };
 
-  const updateProduct = (
-    id: number,
-    field: keyof Product,
-    value: string | number
-  ) => {
+  // 2. Validar código de barras
+  const handleProductSearch = (codeBar: string) => {
+    const product = products.find((prod) => prod.codeBar === codeBar);
+    if (product) {
+      const updatedInvoice = {
+        ...currentInvoice,
+        products: [
+          ...currentInvoice.products,
+          { ...product, stock: 1, discount: 0 }, // stock inicial en 1
+        ],
+      };
+      updateInvoice(updatedInvoice);
+    } else {
+      toastError("Producto no encontrado");
+    }
+  };
+
+  // 3. Control de stock y descuento
+  const handleStockChange = (productId: number, stock: number) => {
     const updatedProducts = currentInvoice.products.map((product) =>
-      product.id === id ? { ...product, [field]: value } : product
+      product.id === productId && stock <= product.stock
+        ? { ...product, stock }
+        : product
     );
     updateInvoice({ ...currentInvoice, products: updatedProducts });
   };
 
-  const removeProduct = (id: number) => {
-    const updatedProducts = currentInvoice.products.filter(
-      (product) => product.id !== id
+  const handleDiscountChange = (productId: number, discount: string) => {
+    let discountValue = parseFloat(discount);
+
+    // Si el input está vacío o no es un número válido
+    if (isNaN(discountValue)) {
+      discountValue = 0; // Asigna 0 como valor por defecto
+    }
+
+    // Asegurar que el descuento siempre esté entre 0 y 100
+    if (discountValue < 0) discountValue = 0;
+    if (discountValue > 100) discountValue = 100;
+
+    const updatedProducts = currentInvoice.products.map((product) =>
+      product.id === productId
+        ? { ...product, discount: discountValue }
+        : product
     );
+
     updateInvoice({ ...currentInvoice, products: updatedProducts });
   };
 
+  // 4. Descuento general
+  const handleGeneralDiscountChange = (discount: number) => {
+    updateInvoice({ ...currentInvoice, generalDiscount: discount });
+  };
+
+  // Calcular subtotal
   const calculateSubtotal = (product: Product) => {
-    return product.price * product.quantity * (1 - product.discount / 100);
+    return product.price * product.stock * (1 - (product.discount ?? 0) / 100);
   };
 
   const calculateTotal = () => {
@@ -85,16 +120,20 @@ export default function GeneradorFactura() {
     return subtotal * (1 - currentInvoice.generalDiscount / 100);
   };
 
+  useEffect(() => {
+    //TODO cargar usuarios, medios de pagos, Nro de factura y productos
+  }, []);
+
   const addNewInvoice = () => {
     const newInvoice: Invoice = {
       id: Date.now(),
       products: [
         {
           id: Date.now(),
-          barcode: "",
+          codeBar: "",
           name: "",
           price: 0,
-          quantity: 1,
+          stock: 1,
           discount: 0,
         },
       ],
@@ -107,7 +146,32 @@ export default function GeneradorFactura() {
     setInvoices([...invoices, newInvoice]);
     setCurrentInvoiceId(newInvoice.id);
   };
+  const removeProduct = (id: number) => {
+    const updatedProducts = currentInvoice.products.filter(
+      (product) => product.id !== id
+    );
+    updateInvoice({ ...currentInvoice, products: updatedProducts });
+  };
 
+  const addProduct = () => {
+    const updatedInvoice = {
+      ...currentInvoice,
+      products: [
+        ...currentInvoice.products,
+        {
+          id: Date.now(),
+          codeBar: "",
+          name: "",
+          price: 0,
+          stock: 0,
+          discount: 0,
+          brand: "",
+          category: "",
+        },
+      ],
+    };
+    updateInvoice(updatedInvoice);
+  };
   const deleteInvoice = () => {
     const updatedInvoices = invoices.filter(
       (inv) => inv.id !== currentInvoiceId
@@ -119,10 +183,10 @@ export default function GeneradorFactura() {
           products: [
             {
               id: Date.now(),
-              barcode: "",
+              codeBar: "",
               name: "",
               price: 0,
-              quantity: 1,
+              stock: 1,
               discount: 0,
             },
           ],
@@ -138,10 +202,6 @@ export default function GeneradorFactura() {
     setInvoices(updatedInvoices);
     setCurrentInvoiceId(invoices[updatedInvoices.length - 1].id);
   };
-
-  useEffect(() => {
-    //TODO cargar usuarios, medios de pagos, Nro de factura y productos
-  }, []);
 
   return (
     <div className="w-full mx-auto  dark:bg-[#1b1e24] text-texto-ligth dark:text-texto-dark text-[.5rem] shadow-lg rounded-lg  min-h-[96vh] flex flex-col justify-between">
@@ -176,15 +236,11 @@ export default function GeneradorFactura() {
           <div className="relative flex flex-grow items-center">
             <span className="absolute left-1">🔍</span>
             <input
+              id="SearchClient"
               type="text"
               placeholder="Buscar cliente"
               value={currentInvoice.clientSearch}
-              onChange={(e) =>
-                updateInvoice({
-                  ...currentInvoice,
-                  clientSearch: e.target.value,
-                })
-              }
+              onChange={(e) => handleClientSearch(e.target.value)}
               className="w-[85%] p-[.1rem] pl-8 border dark:border-texto-ligth rounded text-sm"
             />
           </div>
@@ -233,14 +289,11 @@ export default function GeneradorFactura() {
             <tbody>
               {currentInvoice.products.map((product) => (
                 <tr key={product.id}>
-                  <td className="border p-[0px]">
+                  <td>
                     <input
                       type="text"
-                      autoFocus
-                      value={product.barcode}
-                      onChange={(e) =>
-                        updateProduct(product.id, "barcode", e.target.value)
-                      }
+                      value={product.codeBar}
+                      onChange={(e) => handleProductSearch(e.target.value)}
                       className="w-full h-full border-none dark:text-texto-ligth text-[.5rem]"
                     />
                   </td>
@@ -252,32 +305,30 @@ export default function GeneradorFactura() {
                   </td>
                   <td className="border w-[10vw] p-[0px]">
                     <input
+                      id="stockProduct"
                       type="number"
-                      min={0}
-                      value={product.quantity}
+                      value={product.stock}
                       onChange={(e) =>
-                        updateProduct(
-                          product.id,
-                          "quantity",
-                          parseInt(e.target.value)
-                        )
+                        handleStockChange(product.id, parseInt(e.target.value))
                       }
+                      min={0}
+                      max={product.stock}
                       className="w-full h-full border-none dark:text-texto-ligth text-[.5rem]"
                     />
                   </td>
                   <td className="border p-[0px] w-[10vw] ">
                     <input
+                      id="discountProduct"
                       type="number"
-                      min={0}
-                      max={100}
-                      value={product.discount}
+                      value={product.discount || 0}
                       onChange={(e) =>
-                        updateProduct(
+                        handleDiscountChange(
                           product.id,
-                          "discount",
-                          parseFloat(e.target.value)
+                          parseInt(e.target.value)
                         )
                       }
+                      min={0}
+                      max={100}
                       className="w-full h-full border-none dark:text-texto-ligth text-center text-[.5rem]"
                     />
                   </td>
@@ -309,14 +360,11 @@ export default function GeneradorFactura() {
             <input
               id="general-discount"
               type="number"
-              value={currentInvoice.generalDiscount}
               min={0}
               max={100}
+              value={currentInvoice.generalDiscount}
               onChange={(e) =>
-                updateInvoice({
-                  ...currentInvoice,
-                  generalDiscount: parseFloat(e.target.value),
-                })
+                handleGeneralDiscountChange(parseFloat(e.target.value))
               }
               className=" border rounded p-[0px] text-center dark:text-texto-ligth text-[.5rem]"
             />

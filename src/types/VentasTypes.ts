@@ -1,13 +1,15 @@
 export interface Product {
   id: number;
-  barcode: string;
   name: string;
+  brand?: string;
   price: number;
-  quantity: number;
-  discount: number;
-  brand: string;
-  img: string[];
+  img?: string[];
   stock: number;
+  description?: string;
+  category?: string;
+  colores?: string[];
+  codeBar: string;
+  discount?: number;
 }
 
 export interface Invoice {
