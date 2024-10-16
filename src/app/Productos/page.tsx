@@ -4,6 +4,7 @@ import Loader from "@/components/Loader";
 import ProductSearchBar from "@/components/NavBar/ProductSearchBar";
 import ProductTable from "@/components/Table/ProductTable";
 import { useProducts } from "@/hooks/useProducts";
+import { IProduct } from "@/types/basicTypes";
 
 import { useState } from "react";
 
@@ -14,14 +15,17 @@ const Productos: React.FC = () => {
 
   // Filtra los productos si ya están cargados
   const filteredProducts = products?.filter((product) =>
-    product.name.toLowerCase().includes(searchQuery.toLowerCase())
+    [product.name, product.brand, product.codeBar, product.category].some(
+      (field) => field.toLowerCase().includes(searchQuery.toLowerCase())
+    )
   );
-  console.log(products);
+
   return (
     <section className="flex flex-col gap-4 items-center justify-center">
       <ProductSearchBar
         setTable={setViewTable}
         setSearchQuery={setSearchQuery}
+        searchQueryValue={searchQuery}
       />
 
       {/* Muestra el Loader si los productos aún no están cargados */}

@@ -1,11 +1,18 @@
 import { Dropdown } from "flowbite-react";
 import { Dispatch, SetStateAction } from "react";
-import { MdQrCode, MdAddCircle, MdApps, MdSearch } from "react-icons/md";
+import {
+  MdQrCode,
+  MdAddCircle,
+  MdApps,
+  MdSearch,
+  MdCancel,
+} from "react-icons/md";
 
 const ProductSearchBar: React.FC<{
   setTable: Dispatch<SetStateAction<boolean>>;
   setSearchQuery: Dispatch<SetStateAction<string>>;
-}> = ({ setTable, setSearchQuery }) => {
+  searchQueryValue: string;
+}> = ({ setTable, setSearchQuery, searchQueryValue }) => {
   return (
     <nav className="flex flex-col md:flex-row gap-2 md:gap-4 w-full md:w-[90%] mx-auto rounded-lg bg-secundario p-1 justify-around items-center dark:bg-fondo-dark sticky top-1 z-10">
       <h2 className="cursor-default hidden md:block">Productos</h2>
@@ -17,19 +24,25 @@ const ProductSearchBar: React.FC<{
           id="search"
           className="px-5 rounded-lg bg-secundario-ligth dark:bg-fondo-dark dark:border border-main placeholder:text-[.8em]"
           placeholder="Buscar Producto"
+          value={searchQueryValue}
           onChange={(e) => setSearchQuery(e.target.value)}
         />
       </div>
       <div className="flex flex-row gap-2">
-        <div className="max-h-[80%] text-[.8em]">
-          <Dropdown
-            className="hover:scale-110 text-[.5em]"
-            label="Filtrar"
-            size="xs"
-          >
-            <Dropdown.Item>Calzados</Dropdown.Item>
-            <Dropdown.Item>Vestimenta</Dropdown.Item>
-            <Dropdown.Item>Accesorios</Dropdown.Item>
+        <div className="max-h-[80%] hover:outline outline-1 dark:outline-white rounded">
+          <Dropdown label="Filtrar" size="xs" color="secundario">
+            <Dropdown.Item onClick={() => setSearchQuery("Calzado")}>
+              Calzado
+            </Dropdown.Item>
+            <Dropdown.Item onClick={() => setSearchQuery("Vestimenta")}>
+              Vestimenta
+            </Dropdown.Item>
+            <Dropdown.Item onClick={() => setSearchQuery("Accesorios")}>
+              Accesorios
+            </Dropdown.Item>
+            <Dropdown.Item onClick={() => setSearchQuery("")} icon={MdCancel}>
+              Quitar
+            </Dropdown.Item>
           </Dropdown>
         </div>
         <button className="hover:scale-110">
