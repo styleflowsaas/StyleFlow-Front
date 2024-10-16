@@ -1,0 +1,51 @@
+export const InputsProducts = [
+  {
+    name: "nombre",
+    type: "text",
+    placeholder: "",
+    id: "name",
+    label: "Producto",
+  },
+  {
+    name: "precio",
+    type: "number",
+    placeholder: "",
+    id: "price",
+    label: "Precio",
+  },
+  {
+    name: "stock",
+    type: "number",
+    placeholder: "",
+    id: "stock",
+    label: "Stock",
+  },
+  {
+    name: "codeBr",
+    type: "text",
+    placeholder: "",
+    id: "codeBr",
+    label: "Código",
+  },
+  {
+    name: "categoría",
+    type: "text",
+    placeholder: "",
+    id: "category",
+    label: "Categoría",
+  },
+  {
+    name: "colores",
+    type: "text",
+    placeholder: "",
+    id: "colores",
+    label: "Colores",
+  },
+  {
+    name: "descripción",
+    type: "textarea",
+    placeholder: "",
+    id: "description",
+    label: "Descripción",
+  },
+];
