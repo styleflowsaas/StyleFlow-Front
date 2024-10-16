@@ -5,6 +5,9 @@ export interface Product {
   price: number;
   quantity: number;
   discount: number;
+  brand: string;
+  img: string[];
+  stock: number;
 }
 
 export interface Invoice {
