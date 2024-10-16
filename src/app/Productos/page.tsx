@@ -64,7 +64,7 @@ const products = [
   },
 ];
 const Productos: React.FC = () => {
-  const [viewTable, setViewTable] = useState(false);
+  const [viewTable, setViewTable] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const filteredProducts = products.filter((product) =>
     product.name.toLowerCase().includes(searchQuery.toLowerCase())
