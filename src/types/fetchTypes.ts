@@ -1,13 +1,12 @@
 export type InputLoginType = {
-  dni?: string | number;
-  email?: string;
+  dni: string | number;
   password: string;
 };
-//! Corregir tipos cuando el backend arregle
+
 export type InputRegisterType = InputLoginType & {
   name: string;
   email: string;
-  dni?: string | number;
+  dni: string | number;
   passwordConfirm: string;
   startDate?: Date;
 };

@@ -13,9 +13,9 @@ input {
   font: 1em Fredoka, sans-serif;
 }
 
-input :checked {
+/* input :checked {
   background-image: url('');
-}
+} */
 
 /* Default */
 .theme {

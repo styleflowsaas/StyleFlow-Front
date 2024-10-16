@@ -24,13 +24,15 @@ export default function AuthForm({ isLogin }: { isLogin: boolean }) {
     email: !isLogin
       ? Yup.string().email("Email inválido").required("El email es obligatorio")
       : Yup.string(),
-    password: Yup.string()
-      .min(8, "Al menos 8 caracteres")
-      .matches(
-        /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/,
-        "Al menos una Mayuscula, minuscula, numero y caracter especial"
-      )
-      .required("La contraseña es obligatoria"),
+    password: !isLogin
+      ? Yup.string()
+          .min(8, "Al menos 8 caracteres")
+          .matches(
+            /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/,
+            "Al menos una Mayúscula, minúscula, numero y carácter especial"
+          )
+          .required("La contraseña es obligatoria")
+      : Yup.string(),
 
     passwordConfirm: !isLogin
       ? Yup.string()
@@ -64,8 +66,7 @@ export default function AuthForm({ isLogin }: { isLogin: boolean }) {
   const handleLogin = async (values: InputLoginType) => {
     try {
       const result = await login({
-        // ! Corregir cuando el backend arregle
-        email: values.email,
+        dni: Number(values.dni),
         password: values.password,
       });
       if (result) {
