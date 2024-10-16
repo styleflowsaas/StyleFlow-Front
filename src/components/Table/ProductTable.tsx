@@ -22,14 +22,14 @@ const ProductTable: React.FC<ProductTableProps> = ({ data }) => {
         </thead>
         <tbody className="table-hover">
           {data.map((product) => (
-            <tr key={product.id} className="hoverTd">
-              <td className="text-left p-1">{product.name}</td>
-              <td className="text-left p-1">{product.brand}</td>
-              <td className="text-left p-1">{product.description}</td>
-              <td className="text-left p-1">{product.category}</td>
-              <td className="text-left p-1">$ {product.price}</td>
-              <td className="text-left p-1">
-                <Link href={`/products/${product.id}`}>Ver Imagen</Link>
+            <tr key={product.id} className="hoverTd text-[.7rem]">
+              <td className="text-left p-2">{product.name}</td>
+              <td className="text-left p-2">{product.brand}</td>
+              <td className="text-left p-2">{product.description}</td>
+              <td className="text-left p-2">{product.category}</td>
+              <td className="text-left p-2">$ {product.price}</td>
+              <td className="text-left p-2">
+                <Link href={`/Productos/${product.id}`}>Editar</Link>
               </td>
             </tr>
           ))}

@@ -1,5 +1,5 @@
 import { Dropdown } from "flowbite-react";
-import { Dispatch, SetStateAction } from "react";
+import { Dispatch, SetStateAction, useState } from "react";
 import {
   MdQrCode,
   MdAddCircle,
@@ -7,12 +7,17 @@ import {
   MdSearch,
   MdCancel,
 } from "react-icons/md";
+import ScanModal from "../Modals/ScanModal";
 
 const ProductSearchBar: React.FC<{
   setTable: Dispatch<SetStateAction<boolean>>;
   setSearchQuery: Dispatch<SetStateAction<string>>;
   searchQueryValue: string;
 }> = ({ setTable, setSearchQuery, searchQueryValue }) => {
+  const [showModal, setShowModal] = useState(false);
+  const handleModal = () => {
+    setShowModal(!showModal);
+  };
   return (
     <nav className="flex flex-col md:flex-row gap-2 md:gap-4 w-full md:w-[90%] mx-auto rounded-lg bg-secundario p-1 justify-around items-center dark:bg-fondo-dark sticky top-1 z-10">
       <h2 className="cursor-default hidden md:block">Productos</h2>
@@ -45,7 +50,7 @@ const ProductSearchBar: React.FC<{
             </Dropdown.Item>
           </Dropdown>
         </div>
-        <button className="hover:scale-110">
+        <button className="hover:scale-110" onClick={handleModal}>
           <MdQrCode />
         </button>
         <button className="hover:scale-110">
@@ -59,6 +64,7 @@ const ProductSearchBar: React.FC<{
           <MdApps />
         </button>
       </div>
+      {showModal && <ScanModal handleModal={handleModal} />}
     </nav>
   );
 };
