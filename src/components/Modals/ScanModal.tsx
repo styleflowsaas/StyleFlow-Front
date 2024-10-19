@@ -1,21 +1,15 @@
 import { Button, Modal } from "flowbite-react";
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 
-const ScanModal: React.FC<{ handleModal: () => void }> = ({ handleModal }) => {
+const ScanModal: React.FC<{
+  handleModal: () => void;
+  handleSearch: (code: string) => void;
+}> = ({ handleModal, handleSearch }) => {
   const [code, setCode] = useState("");
-  const router = useRouter();
-
-  const handleSearch = () => {
-    if (code) {
-      router.push(`/Productos/${code}`);
-      handleModal();
-    }
-  };
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key === "Enter") {
-      handleSearch();
+      handleSearch(code);
     }
   };
 
@@ -32,7 +26,7 @@ const ScanModal: React.FC<{ handleModal: () => void }> = ({ handleModal }) => {
           onChange={(e) => setCode(e.target.value)}
           onKeyDown={handleKeyDown}
         />
-        <Button onClick={handleSearch} color="gray">
+        <Button onClick={() => handleSearch(code)} color="gray">
           Buscar
         </Button>{" "}
       </Modal.Body>

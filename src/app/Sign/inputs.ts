@@ -1,4 +1,6 @@
-export const InputLogin = [
+import { InputsBasic } from "@/types/basicTypes";
+
+export const InputLogin: InputsBasic[] = [
   {
     name: "dni",
     type: "text",
@@ -14,7 +16,7 @@ export const InputLogin = [
     children: "Contraseña",
   },
 ];
-export const InputRegister = [
+export const InputRegister: InputsBasic[] = [
   {
     name: "name",
     type: "text",

@@ -71,7 +71,7 @@ export default function AuthForm({ isLogin }: { isLogin: boolean }) {
       });
       if (result) {
         document.cookie = `token-sf=${result.token}`;
-        router.push("/");
+        router.push("/Ventas");
       } else {
         throw new Error("Verifica tus credenciales");
       }
@@ -108,7 +108,7 @@ export default function AuthForm({ isLogin }: { isLogin: boolean }) {
           >
             <section
               className={classNames(
-                "flex flex-col md:flex-row gap-4 transition-all duration-1000 transform",
+                "flex flex-col md:flex-row gap-2 transition-all duration-1000 transform",
                 {
                   "md:translate-x-0 opacity-100 ": isLogin,
                   "-translate-x-1 opacity-100 ": !isLogin,
@@ -119,18 +119,18 @@ export default function AuthForm({ isLogin }: { isLogin: boolean }) {
               <section className="flex flex-col gap-2  " key={"login"}>
                 {InputLogin.map((input) => {
                   return (
-                    <div key={input.id} className="flex flex-col gap-2">
+                    <div key={input.id} className="flex flex-col">
                       <div className="relative border border-main rounded-lg cursor-pointer">
                         <Field
                           name={input.name}
                           type={input.type}
                           placeholder={input.placeholder}
                           id={input.id}
-                          className={`block p-1 w-full text-[.8rem] text-gray-900 bg-transparent rounded-lg border-1 border-gray-300 appearance-none dark:text-texto-ligth dark:border-gray-600 dark:focus:border-main focus:outline-none focus:ring-0 focus:border-main peer`}
+                          className={`block p-1 w-full text-[.5rem] text-gray-900 bg-transparent rounded-lg border-1 border-gray-300 appearance-none dark:text-texto-ligth dark:border-gray-600 dark:focus:border-main focus:outline-none focus:ring-0 focus:border-main peer`}
                         />
                         <label
                           htmlFor={input.id}
-                          className="absolute font-semibold text-[.8rem] text-gray-500 dark:text-gray-900 duration-300 group-focus-within:transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-fondo-ligth dark:bg-secundario px-2 peer-focus:px-2 peer-focus:text-main peer-focus:dark:text-main peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 ml-1 peer-placeholder-shown:h-[90%] peer-placeholder-shown:w-[90%] size-auto peer-focus:size-auto flex items-center cursor-pointer"
+                          className="absolute font-semibold text-[.5rem] text-gray-500 dark:text-gray-900 duration-300 group-focus-within:transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-fondo-ligth dark:bg-secundario px-2 peer-focus:px-2 peer-focus:text-main peer-focus:dark:text-main peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 ml-1 peer-placeholder-shown:h-[90%] peer-placeholder-shown:w-[90%] size-auto peer-focus:size-auto flex items-center cursor-pointer"
                         >
                           {input.children}
                         </label>
@@ -168,7 +168,7 @@ export default function AuthForm({ isLogin }: { isLogin: boolean }) {
                   )}
                   key={"registerFather"}
                 >
-                  <section className="flex flex-col gap-2 " key={"register"}>
+                  <section className="flex flex-col" key={"register"}>
                     {InputRegister.map((input) => {
                       return (
                         <div className="flex flex-col gap-2" key={input.id}>
@@ -178,11 +178,11 @@ export default function AuthForm({ isLogin }: { isLogin: boolean }) {
                               type={input.type}
                               placeholder={input.placeholder}
                               id={input.id}
-                              className={`block p-1 w-full text-[.8rem] text-gray-900 bg-transparent rounded-lg border-1 border-gray-300 appearance-none dark:text-texto-ligth dark:border-gray-600 dark:focus:border-main focus:outline-none focus:ring-0 focus:border-main peer `}
+                              className={`block p-1 w-full text-[.5rem] text-gray-900 bg-transparent rounded-lg border-1 border-gray-300 appearance-none dark:text-texto-ligth dark:border-gray-600 dark:focus:border-main focus:outline-none focus:ring-0 focus:border-main peer `}
                             />
                             <label
                               htmlFor={input.id}
-                              className="absolute font-semibold text-[.8rem] text-gray-500 dark:text-gray-900 duration-300 group-focus-within:transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-fondo-ligth dark:bg-secundario  peer-focus:text-main peer-focus:dark:text-main peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 ml-1 peer-placeholder-shown:h-[90%] peer-placeholder-shown:w-[90%] size-auto peer-focus:size-auto flex items-center cursor-pointer"
+                              className="absolute font-semibold text-[.5rem] text-gray-500 dark:text-gray-900 duration-300 group-focus-within:transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-fondo-ligth dark:bg-secundario  peer-focus:text-main peer-focus:dark:text-main peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 ml-1 peer-placeholder-shown:h-[90%] peer-placeholder-shown:w-[90%] size-auto peer-focus:size-auto flex items-center cursor-pointer"
                             >
                               {input.children}
                             </label>
@@ -214,7 +214,7 @@ export default function AuthForm({ isLogin }: { isLogin: boolean }) {
           <button
             type="submit"
             disabled={loading || isSubmitting}
-            className="p-1 text-[.8rem] bg-main text-texto-dark rounded-lg hover:scale-105 duration-300 w-full md:w-1/2  hover:bg-green-600"
+            className="p-1 text-[.5rem] bg-main text-texto-dark rounded-lg hover:scale-105 duration-300 w-full md:w-1/3  hover:bg-green-600"
           >
             {loading || isSubmitting
               ? "Cargando..."

@@ -12,7 +12,7 @@ const NavBar: React.FC = () => {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const pathname = usePathname();
   const router = useRouter();
-  if (pathname === "/Sign") {
+  if (pathname === "/Sign" || pathname === "/") {
     return null;
   }
   const toggleCollapse = () => {

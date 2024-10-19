@@ -19,10 +19,10 @@ const Sign: React.FC = () => {
           className="w-1/4 lg:w-1/5"
         />
         {module && <AuthForm isLogin={module === "login"} />}
-        <p className="dark:text-texto-ligth text-[.8rem]">
+        <p className="dark:text-texto-ligth text-[.5rem]">
           {module === "login" ? "¿No tienes cuenta?" : "¿Ya tienes cuenta?"}{" "}
           <button
-            className="text-main font-semibold bg-transparent hover:scale-105 duration-300"
+            className="text-main font-semibold bg-transparent hover:scale-105 duration-300 text-[.5rem]"
             onClick={() => setModule(module === "login" ? "register" : "login")}
           >
             {module === "login" ? "Registrate" : "Inicia sesión"}
