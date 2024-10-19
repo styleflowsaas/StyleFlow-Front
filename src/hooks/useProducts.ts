@@ -1,3 +1,4 @@
+import { mockProducts } from "@/app/Productos/page";
 import { IProduct } from "@/types/basicTypes";
 import { useEffect, useState } from "react";
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
@@ -14,7 +15,8 @@ export const useProducts = () => {
           throw new Error("Error al Cargar Productos");
         }
         const data = await response.json();
-        setProducts(data);
+        // setProducts(data);
+        setProducts(mockProducts);
       } catch (error) {
         setError((error as Error).message);
       }
