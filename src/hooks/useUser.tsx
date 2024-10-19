@@ -9,11 +9,14 @@ export const useUser = (id: string) => {
     const fetchUser = async () => {
       try {
         setError(null);
+        const token = localStorage.getItem("token-sf");
+        console.log(token);
+        if (!token) return;
         const response = await fetch(`${API_URL}/user/${id}`, {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
+            Authorization: `Bearer ${token}`,
           },
         });
         if (!response.ok) {

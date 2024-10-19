@@ -71,6 +71,7 @@ export default function AuthForm({ isLogin }: { isLogin: boolean }) {
       });
       if (result) {
         document.cookie = `token-sf=${result.token}`;
+        localStorage.setItem("token-sf", result.token);
         router.push("/Ventas");
       } else {
         throw new Error("Verifica tus credenciales");

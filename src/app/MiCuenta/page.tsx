@@ -3,15 +3,71 @@ import Image from "next/image";
 import { InputsAccount } from "./InputsAccount";
 import { useEffect, useState } from "react";
 import { useUser } from "@/hooks/useUser";
+import { GiConfirmed } from "react-icons/gi";
+import { FaEdit } from "react-icons/fa";
+import { MdCancel } from "react-icons/md";
+import { toastAnswer, toastInfo } from "@/libs/Sonner";
+import Loader from "@/components/Loader";
 
 const MiCuenta: React.FC = () => {
-  const { user, error } = useUser("1");
+  const { user } = useUser("1");
+  const [editUser, setEditUser] = useState(user);
   const [isEditing, setIsEditing] = useState(false);
   useEffect(() => {}, []);
-  return (
+
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    const { name, value } = e.target;
+    setEditUser((prev) => ({ ...prev, [name]: value }));
+  };
+  const handleCancel = async () => {
+    const confirmed = await toastAnswer("Se perderán los cambios, ¿Continuar?");
+    if (!confirmed) {
+      // Si el usuario cancela, no se continúa con la ejecución
+      return;
+    }
+    setIsEditing(false);
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const confirmed = await toastAnswer("¿Deseas guardar los cambios?");
+    if (!confirmed) {
+      // Si el usuario cancela, no se continúa con la ejecución
+      return;
+    }
+    // Aquí iría la lógica para guardar los cambios en el backend --> userEdit
+    setIsEditing(false);
+    toastInfo("Guardado Correctamente");
+  };
+  return user !== undefined ? (
     <div className="rounded w-full md:w-[80%] min-h-[90vh] bg-secundario-ligth dark:bg-fondo-dark m-auto flex flex-col gap-2 justify-between">
-      <div className="rounded-t bg-fondo-dark dark:bg-secundario p-1 text-texto-dark">
-        Nombre
+      <div className="flex flex-row justify-between items-center rounded-t bg-fondo-dark dark:bg-secundario p-1 text-texto-dark px-2">
+        {user ? user?.name : "Nombre"}
+        {isEditing ? (
+          <div className="flex gap-2">
+            <button
+              onClick={handleCancel}
+              className="text-2xl md:text-[.8rem] hover:scale-105 hover:text-red-500"
+            >
+              <MdCancel />
+            </button>
+            <button
+              onClick={handleSubmit}
+              className="text-2xl md:text-[.8rem] hover:scale-105 hover:text-green-500"
+            >
+              <GiConfirmed />
+            </button>
+          </div>
+        ) : (
+          <button
+            onClick={() => setIsEditing(true)}
+            className="text-2xl md:text-[.8rem] hover:scale-105"
+          >
+            <FaEdit />
+          </button>
+        )}
       </div>
       <div className="flex flex-col lg:flex-row gap-4 justify-between p-1 h-full my-5">
         <div>
@@ -32,6 +88,7 @@ const MiCuenta: React.FC = () => {
 
                     <input
                       disabled={!isEditing}
+                      onChange={handleInputChange}
                       type={input.type}
                       name={input.name}
                       id={input.id}
@@ -80,32 +137,9 @@ const MiCuenta: React.FC = () => {
           />
         </div>
       </div>
-      <div className="rounded-b bg-fondo-dark dark:bg-secundario  py-1 px-2 text-texto-dark flex flex-row gap-2 justify-center">
-        {isEditing ? (
-          <>
-            <button
-              onClick={() => setIsEditing(false)}
-              className="text-[.8rem] outline outline-1 px-2 dark:outline-black rounded hover:scale-105 hover:outline-red-600 hover:outline-2"
-            >
-              Cancelar
-            </button>
-            <button
-              onClick={() => setIsEditing(false)}
-              className="text-[.8rem] outline outline-1 px-2 dark:outline-black rounded hover:scale-105 hover:outline-red-600 hover:outline-2"
-            >
-              Guardar
-            </button>
-          </>
-        ) : (
-          <button
-            onClick={() => setIsEditing(true)}
-            className="text-[.8rem] outline outline-1 px-2 dark:outline-black rounded hover:scale-105 hover:outline-blue-600 hover:outline-2"
-          >
-            Editar
-          </button>
-        )}
-      </div>
     </div>
+  ) : (
+    <Loader />
   );
 };
 
