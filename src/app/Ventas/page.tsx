@@ -6,7 +6,6 @@ import {
   MdPersonAdd,
   MdPersonRemove,
 } from "react-icons/md";
-import { mockProducts } from "../Productos/page";
 import { toastError } from "@/libs/Sonner";
 import { Cliente, InvoiceInterface, SelectInputs } from "@/types/VentasTypes";
 import { useClients } from "@/hooks/useClients";

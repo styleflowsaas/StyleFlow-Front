@@ -69,6 +69,7 @@ export default function AuthForm({ isLogin }: { isLogin: boolean }) {
         dni: Number(values.dni),
         password: values.password,
       });
+      console.log(result);
       if (result) {
         document.cookie = `token-sf=${result.token}`;
         localStorage.setItem("token-sf", result.token);

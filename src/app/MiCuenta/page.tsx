@@ -8,6 +8,7 @@ import { FaEdit } from "react-icons/fa";
 import { MdCancel } from "react-icons/md";
 import { toastAnswer, toastInfo } from "@/libs/Sonner";
 import Loader from "@/components/Loader";
+import { User } from "@/types/basicTypes";
 
 const MiCuenta: React.FC = () => {
   const { user } = useUser("1");
@@ -19,7 +20,7 @@ const MiCuenta: React.FC = () => {
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
     const { name, value } = e.target;
-    setEditUser((prev) => ({ ...prev, [name]: value }));
+    setEditUser((prev) => ({ ...prev, [name]: value } as User));
   };
   const handleCancel = async () => {
     const confirmed = await toastAnswer("Se perderán los cambios, ¿Continuar?");
@@ -37,6 +38,7 @@ const MiCuenta: React.FC = () => {
       // Si el usuario cancela, no se continúa con la ejecución
       return;
     }
+    console.log(editUser);
     // Aquí iría la lógica para guardar los cambios en el backend --> userEdit
     setIsEditing(false);
     toastInfo("Guardado Correctamente");
