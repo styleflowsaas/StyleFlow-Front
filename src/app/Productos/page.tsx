@@ -6,7 +6,7 @@ import ProductTable from "@/components/Table/ProductTable";
 import { useProducts } from "@/hooks/useProducts";
 import { IProduct } from "@/types/basicTypes";
 
-import { useState } from "react";
+import { useState, useTransition } from "react";
 
 export const mockProducts: IProduct[] = [
   {
@@ -96,11 +96,17 @@ export const mockProducts: IProduct[] = [
 ];
 const Productos: React.FC = () => {
   const [viewTable, setViewTable] = useState(true);
+  const [isPending, startTransition] = useTransition();
   const [searchQuery, setSearchQuery] = useState("");
-
   const { products } = useProducts();
 
-  // Filtra los productos si ya están cargados
+  const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const value = event.target.value;
+    startTransition(() => {
+      setSearchQuery(value);
+    });
+  };
+
   const filteredProducts = mockProducts?.filter((product) =>
     searchQuery === ""
       ? true
@@ -113,8 +119,9 @@ const Productos: React.FC = () => {
     <section className="flex flex-col gap-4 items-center justify-center">
       <ProductSearchBar
         setTable={setViewTable}
-        setSearchQuery={setSearchQuery}
+        setSearchQuery={handleSearch}
         searchQueryValue={searchQuery}
+        startTransition={startTransition}
       />
 
       {/* Muestra el Loader si los productos aún no están cargados */}
@@ -122,6 +129,7 @@ const Productos: React.FC = () => {
         <Loader />
       ) : (
         <section className="flex flex-wrap gap-3 items-center justify-center w-full">
+          {isPending && <Loader />}
           {filteredProducts && filteredProducts.length > 0 ? (
             viewTable ? (
               <ProductTable data={filteredProducts} />

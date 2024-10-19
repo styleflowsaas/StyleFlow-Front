@@ -1,10 +1,10 @@
 export const InputsProducts = [
   {
-    name: "nombre",
+    name: "codeBr",
     type: "text",
     placeholder: "",
-    id: "name",
-    label: "Producto",
+    id: "codeBr",
+    label: "Código",
   },
   {
     name: "precio",
@@ -14,20 +14,6 @@ export const InputsProducts = [
     label: "Precio",
   },
   {
-    name: "stock",
-    type: "number",
-    placeholder: "",
-    id: "stock",
-    label: "Stock",
-  },
-  {
-    name: "codeBr",
-    type: "text",
-    placeholder: "",
-    id: "codeBr",
-    label: "Código",
-  },
-  {
     name: "categoría",
     type: "text",
     placeholder: "",
@@ -35,12 +21,13 @@ export const InputsProducts = [
     label: "Categoría",
   },
   {
-    name: "colores",
-    type: "text",
+    name: "stock",
+    type: "number",
     placeholder: "",
-    id: "colores",
-    label: "Colores",
+    id: "stock",
+    label: "Stock",
   },
+
   {
     name: "descripción",
     type: "textarea",
