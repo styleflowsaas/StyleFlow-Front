@@ -34,18 +34,29 @@ body {
 
 }
 
-
 html {
   @apply bg-fondo-ligth text-texto-ligth;
 }
-
 
 html.dark {
   @apply text-texto-dark;
 }
 
+.pattern {
+  background: transparent;
+  backdrop-filter: blur(5px);
+}
 
+.pattern-reverse {
+  background-image: repeating-linear-gradient(90deg,
+      transparent 0px,
+      hsla(13, 67%, 44%, 0.148) 10px,
+      hsla(0, 91%, 49%, 0.292) 10px,
+      hsla(231, 78%, 4%, 0.091) 20px);
+  width: 100%;
+  height: 100vh;
 
+}
 
 .logo {
   font-family: 'Irish Grover', cursive;
