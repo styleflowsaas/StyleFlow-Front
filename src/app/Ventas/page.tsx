@@ -1,344 +1,378 @@
 "use client";
-import { Invoice, Product } from "@/types/VentasTypes";
-import React, { useEffect, useState } from "react";
-import { MdDelete, MdPersonAdd } from "react-icons/md";
+import { useEffect, useState } from "react";
+import {
+  MdBarcodeReader,
+  MdDelete,
+  MdPersonAdd,
+  MdPersonRemove,
+} from "react-icons/md";
 import { mockProducts } from "../Productos/page";
-import { IProduct } from "@/types/basicTypes";
 import { toastError } from "@/libs/Sonner";
+import { Cliente, InvoiceInterface, SelectInputs } from "@/types/VentasTypes";
+import { useClients } from "@/hooks/useClients";
+import { useProducts } from "@/hooks/useProducts";
+import Select from "react-select";
+const defaultInterface: InvoiceInterface = {
+  id: 0,
+  factura: {
+    id: 0,
+    tipo: "",
+  },
+  products: [],
+  client: undefined,
+  clientType: "",
+  generalDiscount: 0,
+  paymentMethod: "",
+  total: 0,
+};
 
 export default function GeneradorFactura() {
-  const [products, setProducts] = useState<IProduct[]>(mockProducts);
-  const [clients, setClients] = useState<{ name: string; id: number }[]>();
-  const [invoices, setInvoices] = useState<Invoice[]>([
-    {
-      id: 1,
-      products: [
-        {
-          id: 1,
-          name: "",
-          codeBar: "",
-          price: 0,
-          stock: 1,
-          discount: 0,
-        },
-      ],
-      clientSearch: "",
-      invoiceNumber: 1,
-      clientType: "consumidor-final",
-      generalDiscount: 0,
-      paymentMethod: "",
-    },
-  ]);
-  const [currentInvoiceId, setCurrentInvoiceId] = useState(1);
+  //clients Functionality
+  const { clients } = useClients();
+  const [clientOptions, setClientOptions] = useState<unknown[]>([]);
+  const [clientSelect, setClientSelect] = useState<Cliente | undefined>(
+    undefined
+  );
+  useEffect(() => {
+    if (clients) {
+      const options = clients.map((client) => ({
+        value: client.name,
+        label: `${client.name} - ${client.cuil}`,
+      }));
+      setClientOptions(options);
+    }
+  }, [clients]);
 
-  const currentInvoice =
-    invoices.find((inv) => inv.id === currentInvoiceId) || invoices[0];
+  const handleClientChange = (newValue: unknown) => {
+    const selectedOption = newValue as SelectInputs;
+    const found = clients?.find(
+      (client) => client.name === selectedOption.value
+    );
+    if (!found) {
+      toastError("No se encontró el cliente");
+      return;
+    }
+    setInvoices((prev) =>
+      prev.map((invoice, index) =>
+        index === currentInvoice ? { ...invoice, client: found } : invoice
+      )
+    );
 
-  const updateInvoice = (updatedInvoice: Invoice) => {
-    setInvoices(
-      invoices.map((inv) =>
-        inv.id === currentInvoiceId ? updatedInvoice : inv
+    setClientSelect(found);
+  };
+
+  // Products Functionality
+  const { products } = useProducts();
+
+  const [productOptions, setProductOptions] = useState<SelectInputs[]>([]);
+
+  useEffect(() => {
+    if (products) {
+      const options = products.map((product) => ({
+        value: product.name,
+        label: `${product.name} - ${product.codeBar}`,
+      }));
+      setProductOptions(options);
+    }
+  }, [products]);
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const handleProductChange = (newValue: any) => {
+    const found = products?.find((product) => product.name === newValue.value);
+    if (!found) {
+      toastError("No se encontró el producto");
+      return;
+    }
+    setInvoices((prev) => {
+      return prev.map((invoice, index) =>
+        index === currentInvoice
+          ? {
+              ...invoice,
+              products: [...invoice.products, found!],
+            }
+          : invoice
+      );
+    });
+  };
+
+  const deleteProduct = (id: number) => {
+    setInvoices((prev) =>
+      prev.map((invoice, index) =>
+        index === currentInvoice
+          ? {
+              ...invoice,
+              products: invoice.products.filter((product) => product.id !== id),
+            }
+          : invoice
       )
     );
   };
 
-  // 1. Búsqueda de Cliente
-  const handleClientSearch = (searchTerm: string) => {
-    const client = clients?.find((client) =>
-      client.name.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-    if (client) {
-      updateInvoice({ ...currentInvoice, clientSearch: client.name });
-    } else {
-      toastError("Cliente no encontrado");
-    }
+  const handleCantidad = (id: number, value: number) => {
+    setInvoices((prev) => {
+      return prev.map((invoice) => ({
+        ...invoice,
+        products: invoice.products.map((product) =>
+          product.id === id
+            ? { ...product, stock: product.stock - value }
+            : product
+        ),
+      }));
+    });
   };
 
-  // 2. Validar código de barras
-  const handleProductSearch = (codeBar: string) => {
-    const product = products.find((prod) => prod.codeBar === codeBar);
-    if (product) {
-      const updatedInvoice = {
-        ...currentInvoice,
-        products: [
-          ...currentInvoice.products,
-          { ...product, stock: 1, discount: 0 }, // stock inicial en 1
-        ],
-      };
-      updateInvoice(updatedInvoice);
-    } else {
-      toastError("Producto no encontrado");
-    }
+  const handleDiscountChange = (value: number) => {
+    if (value < 0 || value > 100) return;
+    setInvoices((prev) => {
+      return prev.map((invoice) => ({
+        ...invoice,
+        products: invoice.products.map((product) => ({
+          ...product,
+          discount: value,
+        })),
+      }));
+    });
   };
 
-  // 3. Control de stock y descuento
-  const handleStockChange = (productId: number, stock: number) => {
-    const updatedProducts = currentInvoice.products.map((product) =>
-      product.id === productId && stock <= product.stock
-        ? { ...product, stock }
-        : product
-    );
-    updateInvoice({ ...currentInvoice, products: updatedProducts });
+  const handleGeneralDiscountChange = (value: number) => {
+    if (value < 0 || value > 100) return;
+    setInvoices((prev) => {
+      return prev.map((invoice) => ({
+        ...invoice,
+        generalDiscount: value,
+      }));
+    });
   };
 
-  const handleDiscountChange = (productId: number, discount: string) => {
-    let discountValue = parseFloat(discount);
-
-    // Si el input está vacío o no es un número válido
-    if (isNaN(discountValue)) {
-      discountValue = 0; // Asigna 0 como valor por defecto
-    }
-
-    // Asegurar que el descuento siempre esté entre 0 y 100
-    if (discountValue < 0) discountValue = 0;
-    if (discountValue > 100) discountValue = 100;
-
-    const updatedProducts = currentInvoice.products.map((product) =>
-      product.id === productId
-        ? { ...product, discount: discountValue }
-        : product
-    );
-
-    updateInvoice({ ...currentInvoice, products: updatedProducts });
-  };
-
-  // 4. Descuento general
-  const handleGeneralDiscountChange = (discount: number) => {
-    updateInvoice({ ...currentInvoice, generalDiscount: discount });
-  };
-
-  // Calcular subtotal
-  const calculateSubtotal = (product: Product) => {
-    return product.price * product.stock * (1 - (product.discount ?? 0) / 100);
-  };
-
-  const calculateTotal = () => {
-    const subtotal = currentInvoice.products.reduce(
-      (sum, product) => sum + calculateSubtotal(product),
-      0
-    );
-    return subtotal * (1 - currentInvoice.generalDiscount / 100);
-  };
-
-  useEffect(() => {
-    //TODO cargar usuarios, medios de pagos, Nro de factura y productos
-  }, []);
+  //Invoices Functionality
+  const [invoices, setInvoices] = useState<InvoiceInterface[]>([
+    defaultInterface,
+  ]);
+  const [currentInvoice, setCurrentInvoice] = useState<number>(0);
+  const [nextInvoiceId, setNextInvoiceId] = useState(1);
 
   const addNewInvoice = () => {
-    const newInvoice: Invoice = {
-      id: Date.now(),
-      products: [
-        {
-          id: Date.now(),
-          codeBar: "",
-          name: "",
-          price: 0,
-          stock: 1,
-          discount: 0,
-        },
-      ],
-      clientSearch: "",
-      invoiceNumber: invoices.length + 1,
-      clientType: "consumidor-final",
+    const NewInterface: InvoiceInterface = {
+      id: nextInvoiceId,
+      factura: {
+        id: 0,
+        tipo: "",
+      },
+      products: [],
+      client: undefined,
+      clientType: "",
       generalDiscount: 0,
       paymentMethod: "",
+      total: 0,
     };
-    setInvoices([...invoices, newInvoice]);
-    setCurrentInvoiceId(newInvoice.id);
-  };
-  const removeProduct = (id: number) => {
-    const updatedProducts = currentInvoice.products.filter(
-      (product) => product.id !== id
-    );
-    updateInvoice({ ...currentInvoice, products: updatedProducts });
+    setInvoices([...invoices, NewInterface]);
+    setCurrentInvoice(invoices.length);
+    setNextInvoiceId((prev) => prev + 1);
+    setClientSelect(NewInterface.client);
   };
 
-  const addProduct = () => {
-    const updatedInvoice = {
-      ...currentInvoice,
-      products: [
-        ...currentInvoice.products,
-        {
-          id: Date.now(),
-          codeBar: "",
-          name: "",
-          price: 0,
-          stock: 0,
-          discount: 0,
-          brand: "",
-          category: "",
-        },
-      ],
-    };
-    updateInvoice(updatedInvoice);
-  };
-  const deleteInvoice = () => {
-    const updatedInvoices = invoices.filter(
-      (inv) => inv.id !== currentInvoiceId
-    );
-    if (invoices.length === 1) {
-      setInvoices([
-        {
-          id: 1,
-          products: [
-            {
-              id: Date.now(),
-              codeBar: "",
-              name: "",
-              price: 0,
-              stock: 1,
-              discount: 0,
-            },
-          ],
-          clientSearch: "",
-          invoiceNumber: 1,
-          clientType: "consumidor-final",
-          generalDiscount: 0,
-          paymentMethod: "",
-        },
-      ]);
-      return;
+  const changeCurrentInvoice = (id: number) => {
+    const foundInvoice = invoices.find((invoice) => invoice.id === id);
+    if (foundInvoice) {
+      setCurrentInvoice(id);
+      setClientSelect(foundInvoice.client);
     }
-    setInvoices(updatedInvoices);
-    setCurrentInvoiceId(invoices[updatedInvoices.length - 1].id);
   };
 
+  const updateInvoice = (updatedInvoice: InvoiceInterface) => {
+    setInvoices(
+      invoices.map((inv) => (inv.id === currentInvoice ? updatedInvoice : inv))
+    );
+  };
+  const deleteInvoice = (id: number) => {
+    console.log(id);
+    setInvoices((prevInvoices) => {
+      const updatedInvoices = prevInvoices.filter(
+        (invoice) => invoice.id !== id
+      );
+
+      if (updatedInvoices.length === 0) {
+        setCurrentInvoice(0); // Restablecer al primer índice si no hay facturas
+        return [defaultInterface]; // Si no hay facturas, volver a la predeterminada
+      } else {
+        // Si el currentInvoice es mayor o igual que la longitud de las facturas restantes, ajustarlo
+        if (currentInvoice >= updatedInvoices.length) {
+          setCurrentInvoice(updatedInvoices.length - 1);
+        }
+        return updatedInvoices;
+      }
+    });
+  };
+
+  const optionsIVA = [
+    { value: "consumidorFinal", label: "Consumidor Final" },
+    {
+      value: "responsableInscripto",
+      label: "Responsable Inscripto",
+    },
+  ];
+  const optionsPagos = [
+    { value: "efectivo", label: "efectivo" },
+    { value: "mercadoPago", label: "Mercado Pago" },
+    { value: "TarjetaD", label: "Tarjeta Debito" },
+    { value: "TarjetaC", label: "Tarjeta Credito" },
+  ];
   return (
-    <div className="w-full mx-auto  dark:bg-[#1b1e24] text-texto-ligth dark:text-texto-dark text-[.5rem] shadow-lg rounded-lg  min-h-[96vh] flex flex-col justify-between">
+    <div className="w-full mx-auto dark:bg-[#1b1e24] text-texto-ligth dark:text-texto-dark text-[.5rem] shadow-lg rounded-lg min-h-[96vh] flex flex-col justify-between">
       <div className="flex justify-between items-center rounded-t-lg bg-secundario dark:bg-fondo-dark p-1">
         <h2 className="text-base font-bold">Punto de Ventas</h2>
+        <p className="text-sm">Factura Tipo: B - Nº:</p>
         <div className="flex items-center gap-2">
           <select
-            value={currentInvoiceId.toString()}
-            onChange={(e) => setCurrentInvoiceId(parseInt(e.target.value))}
             className="p-[2px] px-1 border rounded bg-fondo-ligth text-texto-ligth text-[.5rem]"
+            value={currentInvoice}
+            onChange={(e) => changeCurrentInvoice(Number(e.target.value))}
           >
             {invoices.map((invoice) => (
-              <option key={invoice.id} value={invoice.id.toString()}>
-                Venta Nº {invoice.invoiceNumber}
+              <option key={invoice.id} value={invoice.id}>
+                Venta Nº {invoice.id} {/* Usar el ID real */}
               </option>
             ))}
           </select>
+
           <button
+            className="p-2 border rounded hover:scale-105"
             onClick={addNewInvoice}
-            className="p-2 border-collapse outline outline-1 rounded hover:bg-secundario-ligth hover:dark:bg-secundario hover:scale-105"
           >
             Nueva Venta
           </button>
         </div>
       </div>
 
-      <div className="space-y-2 p-1">
-        <div className="flex items-center space-x-2">
-          <button className="text-xl hover:scale-105 hover:text-green-600">
-            <MdPersonAdd />
-          </button>
-          <div className="relative flex flex-grow items-center">
-            <span className="absolute left-1">🔍</span>
-            <input
-              id="SearchClient"
-              type="text"
-              placeholder="Buscar cliente"
-              value={currentInvoice.clientSearch}
-              onChange={(e) => handleClientSearch(e.target.value)}
-              className="w-[85%] p-[.1rem] pl-8 border dark:border-texto-ligth rounded text-sm"
-            />
+      {/* Cliente */}
+      <div className="flex flex-col gap-2 w-full px-2 mt-1">
+        <div className="flex flex-row justify-between gap-1">
+          <div className="flex items-center space-x-2 w-2/3">
+            <button className="text-xl hover:scale-105 hover:text-green-600">
+              <MdPersonAdd />
+            </button>
+            <div className="relative flex flex-grow items-center">
+              <span className="absolute left-1">🔍</span>
+              <Select
+                options={clientOptions}
+                onChange={handleClientChange}
+                placeholder="Buscar cliente"
+                noOptionsMessage={() => "No hay coincidencias"}
+                isSearchable
+                theme={(theme) => ({
+                  ...theme,
+                  colors: {
+                    ...theme.colors,
+                    primary: "black",
+                  },
+                })}
+                className="w-full placeholder-shown:text-black text-black outline-none border-none focus:ring-0"
+              />
+            </div>
+          </div>
+          <div className="w-1/3 border p-[2px] flex flex-col items-center justify-center min-h-full rounded">
+            {clientSelect ? (
+              <div className="flex flex-col items-start">
+                <div className="flex flex-row gap-2">
+                  <p>{clientSelect.name}</p>
+                  <p>CUIL: {clientSelect.cuil}</p>
+                </div>
+                <div className="flex flex-row gap-2">
+                  <p>{clientSelect.address}</p>
+                  <button onClick={() => setClientSelect(undefined)}>
+                    <MdPersonRemove />
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <p>Cliente Genérico</p>
+            )}
           </div>
         </div>
 
-        <div className="flex items-center justify-between mx-auto">
-          <select
-            value={currentInvoice.clientType}
-            onChange={(e) =>
-              updateInvoice({ ...currentInvoice, clientType: e.target.value })
-            }
-            className="p-[2px] border dark:border-texto-ligth rounded dark:text-texto-ligth text-[.5rem] cursor-pointer"
-          >
-            <option value="consumidor-final">Consumidor Final</option>
-            <option value="responsable-inscripto">Responsable Inscripto</option>
-          </select>
-          <p className="text-sm">Factura Nº: {currentInvoice.invoiceNumber}</p>
+        {/* Productos */}
+        <div className="flex flex-row justify-between gap-1">
+          <div className="flex items-center space-x-2 w-2/3">
+            <button className="text-xl hover:scale-105 hover:text-green-600">
+              <MdBarcodeReader />
+            </button>
+            <div className="relative flex flex-grow items-center">
+              <span className="absolute left-1">🔍</span>
+              <Select
+                autoFocus
+                isSearchable
+                noOptionsMessage={() => "No hay coincidencias"}
+                options={productOptions}
+                onChange={handleProductChange}
+                theme={(theme) => ({
+                  ...theme,
+                  colors: {
+                    ...theme.colors,
+                    primary: "black",
+                  },
+                })}
+                placeholder="Buscar Producto"
+                className="w-full placeholder-shown:text-black text-black"
+              />
+            </div>
+          </div>
+          <Select
+            options={optionsIVA}
+            placeholder="Tipo de IVA"
+            className="w-1/3 placeholder-shown:text-black text-black"
+          />
         </div>
+      </div>
+
+      {/* Tabla de Productos */}
+      <div className="space-y-2 p-1">
         <div className="min-h-[20vh]">
           <table className="w-full border-collapse">
             <thead>
               <tr>
-                <th className="border dark:border-texto-dark text-[.5rem] w-[15vw]">
-                  Código de Barras
-                </th>
-                <th className="border dark:border-texto-dark text-[.5rem]">
-                  Producto
-                </th>
-                <th className="border dark:border-texto-dark text-[.5rem]">
-                  Precio
-                </th>
-                <th className="border dark:border-texto-dark text-[.5rem]">
-                  Cantidad
-                </th>
-                <th className="border dark:border-texto-dark  text-[.5rem]">
-                  Desc. (%)
-                </th>
-                <th className="border dark:border-texto-dark text-[.5rem]">
-                  Subtotal
-                </th>
-                <th className="border dark:border-texto-dark text-[.5rem]">
-                  Acción
-                </th>
+                <th className="border text-[.5rem]">Código de Barras</th>
+                <th className="border text-[.5rem]">Producto</th>
+                <th className="border text-[.5rem]">Precio</th>
+                <th className="border text-[.5rem]">Cantidad</th>
+                <th className="border text-[.5rem]">Descuento</th>
+                <th className="border text-[.5rem]">Acciones</th>
               </tr>
             </thead>
             <tbody>
-              {currentInvoice.products.map((product) => (
+              {invoices[currentInvoice].products.map((product) => (
                 <tr key={product.id}>
-                  <td>
+                  <td className="border text-center text-[.5rem] p-[0px]">
+                    {product.codeBar}
+                  </td>
+                  <td className="border text-center text-[.5rem] p-[0px]">
+                    {product.name}
+                  </td>
+                  <td className="border text-center text-[.5rem] p-[0px]">
+                    ${product.price}
+                  </td>
+                  <td className="border text-center text-[.5rem] w-[5vw]">
                     <input
-                      type="text"
-                      value={product.codeBar}
-                      onChange={(e) => handleProductSearch(e.target.value)}
-                      className="w-full h-full border-none dark:text-texto-ligth text-[.5rem]"
-                    />
-                  </td>
-                  <td className="border text-center p-[0px]">
-                    <p>{product.name}</p>
-                  </td>
-                  <td className="border text-center p-[0px] w-[10vw]">
-                    <p>$ {product.price}</p>
-                  </td>
-                  <td className="border w-[10vw] p-[0px]">
-                    <input
-                      id="stockProduct"
                       type="number"
-                      value={product.stock}
                       onChange={(e) =>
-                        handleStockChange(product.id, parseInt(e.target.value))
+                        handleCantidad(product.id, Number(e.target.value))
                       }
-                      min={0}
-                      max={product.stock}
-                      className="w-full h-full border-none dark:text-texto-ligth text-[.5rem]"
+                      min={1}
+                      className="w-full text-center p-[0px] text-[.5rem]"
                     />
                   </td>
-                  <td className="border p-[0px] w-[10vw] ">
+                  <td className="border text-center text-[.5rem] w-[5vw]">
                     <input
-                      id="discountProduct"
                       type="number"
-                      value={product.discount || 0}
                       onChange={(e) =>
-                        handleDiscountChange(
-                          product.id,
-                          parseInt(e.target.value)
-                        )
+                        handleDiscountChange(Number(e.target.value))
                       }
-                      min={0}
-                      max={100}
-                      className="w-full h-full border-none dark:text-texto-ligth text-center text-[.5rem]"
+                      className="w-full text-center p-[0px] text-[.5rem]"
                     />
                   </td>
-                  <td className="border p-[0px] text-center w-[10vw]">
-                    ${calculateSubtotal(product).toFixed(2)}
-                  </td>
-                  <td className="border  text-center">
+                  <td className="border text-center">
                     <button
-                      onClick={() => removeProduct(product.id)}
-                      className="p-1 bg-red-500 text-white rounded hover:bg-red-600 hover:scale-105"
+                      onClick={() => deleteProduct(product.id)}
+                      className="hover:text-red-500"
                     >
                       <MdDelete />
                     </button>
@@ -348,60 +382,55 @@ export default function GeneradorFactura() {
             </tbody>
           </table>
         </div>
-        <button
-          onClick={addProduct}
-          className="px-2 py-2 mx-1 bg-green-600 dark:bg-green-700 text-white rounded hover:bg-green-700 dark:hover:bg-green-600"
-        >
-          + Agregar Producto
-        </button>
-
-        <div className="flex items-center justify-between px-1">
-          <div className="flex flex-row gap-2 items-center">
+        {/* Resumen de la Venta */}
+        <div className="space-y-1 flex px-2 justify-between">
+          <div className="flex gap-1 items-center">
+            <span>Descuento General:</span>
             <input
-              id="general-discount"
               type="number"
-              min={0}
-              max={100}
-              value={currentInvoice.generalDiscount}
               onChange={(e) =>
-                handleGeneralDiscountChange(parseFloat(e.target.value))
+                handleGeneralDiscountChange(Number(e.target.value))
               }
-              className=" border rounded p-[0px] text-center dark:text-texto-ligth text-[.5rem]"
+              className="w-12 p-0 rounded text-[.5rem] h-5 text-black text-center"
             />
-            <label htmlFor="general-discount" className="font-medium">
-              Descuento General (%)
-            </label>
           </div>
-          <p className="text-right text-lg font-semibold">
-            Total: ${calculateTotal().toFixed(2)}
-          </p>
+          <div className="flex gap-1 font-semibold text-[1rem]">
+            <span>Total:</span>
+            <span>${invoices[currentInvoice].total.toFixed(2)}</span>
+          </div>
         </div>
       </div>
-      <div className="p-1 rounded-b-lg flex justify-between bg-secundario dark:bg-fondo-dark">
-        <select
-          value={currentInvoice.paymentMethod}
+
+      {/* Botones de acción */}
+      <div className="flex justify-between items-center p-2 bg-secundario dark:bg-fondo-dark rounded-b-lg">
+        <Select
+          placeholder="Metodo de Pago"
+          menuPlacement="top"
+          options={optionsPagos}
           onChange={(e) =>
-            updateInvoice({ ...currentInvoice, paymentMethod: e.target.value })
+            updateInvoice({
+              ...invoices[currentInvoice],
+              paymentMethod: e?.toString() || "",
+            })
           }
-          className="p-[1px] px-1 border rounded dark:text-texto-ligth text-[.5rem] cursor-pointer"
+          theme={(theme) => ({
+            ...theme,
+            colors: {
+              ...theme.colors,
+              primary: "black",
+            },
+          })}
+          className="w-1/5  placeholder-shown:text-black text-black outline-none border-none focus:ring-0"
+        ></Select>
+        <button
+          onClick={() => deleteInvoice(currentInvoice)}
+          className="bg-red-500 p-2 rounded hover:scale-105"
         >
-          <option value="">Medio de pago</option>
-          <option value="efectivo">Efectivo</option>
-          <option value="tarjeta">Tarjeta</option>
-          <option value="transferencia">Transferencia</option>
-          <option value="mercadoPago">Mercado Pago</option>
-        </select>
-        <div className="space-x-2">
-          <button
-            className="px-4 py-2 border rounded hover:bg-red-500 dark:hover:bg-red-700"
-            onClick={deleteInvoice}
-          >
-            Cancelar
-          </button>
-          <button className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
-            Finalizar Compra
-          </button>
-        </div>
+          Cancelar Venta
+        </button>
+        <button className="bg-green-500 p-2 rounded hover:scale-105">
+          Finalizar Compra
+        </button>
       </div>
     </div>
   );
