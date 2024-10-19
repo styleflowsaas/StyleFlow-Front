@@ -28,6 +28,7 @@ const MiCuenta: React.FC = () => {
       // Si el usuario cancela, no se continúa con la ejecución
       return;
     }
+    setEditUser(user);
     setIsEditing(false);
   };
 
@@ -43,7 +44,7 @@ const MiCuenta: React.FC = () => {
     setIsEditing(false);
     toastInfo("Guardado Correctamente");
   };
-  return user !== undefined ? (
+  return user ? (
     <div className="rounded w-full md:w-[80%] min-h-[90vh] bg-secundario-ligth dark:bg-fondo-dark m-auto flex flex-col gap-2 justify-between">
       <div className="flex flex-row justify-between items-center rounded-t bg-fondo-dark dark:bg-secundario p-1 text-texto-dark px-2">
         {user ? user?.name : "Nombre"}
@@ -75,29 +76,27 @@ const MiCuenta: React.FC = () => {
         <div>
           <form className={`flex flex-wrap gap-2 justify-center max-w-[2/3] `}>
             {InputsAccount.map((input) =>
-              input.name === "password" || input.name === "newPassword" ? (
-                isEditing ? (
-                  <div
-                    className="outline outline-1 outline-black dark:outline-white rounded relative"
-                    key={input.id}
+              isEditing ? (
+                <div
+                  className="outline outline-1 outline-black dark:outline-white rounded relative"
+                  key={input.id}
+                >
+                  <label
+                    htmlFor={input.id}
+                    className="text-[.5rem] absolute -top-1 bg-white dark:bg-black px-1 ml-1 rounded"
                   >
-                    <label
-                      htmlFor={input.id}
-                      className="text-[.5rem] absolute -top-1 bg-white dark:bg-black px-1 ml-1 rounded"
-                    >
-                      {input.children}
-                    </label>
+                    {input.children}
+                  </label>
 
-                    <input
-                      disabled={!isEditing}
-                      onChange={handleInputChange}
-                      type={input.type}
-                      name={input.name}
-                      id={input.id}
-                      className="rounded w-full p-0 bg-transparent px-1 text-texto-ligth dark:text-texto-dark outline-none border-none focus:ring-0 text-[.5rem]"
-                    />
-                  </div>
-                ) : null
+                  <input
+                    disabled={!isEditing}
+                    onChange={handleInputChange}
+                    type={input.type}
+                    name={input.name}
+                    id={input.id}
+                    className="rounded w-full p-0 bg-transparent px-1 text-texto-ligth dark:text-texto-dark outline-none border-none focus:ring-0 text-[.5rem]"
+                  />
+                </div>
               ) : (
                 <div
                   className="outline outline-1 outline-black dark:outline-white rounded relative"
@@ -112,6 +111,10 @@ const MiCuenta: React.FC = () => {
 
                   <input
                     disabled={!isEditing}
+                    value={
+                      editUser?.[input.name as keyof User] ??
+                      user?.[input.name as keyof User]
+                    }
                     type={input.type}
                     name={input.name}
                     id={input.id}

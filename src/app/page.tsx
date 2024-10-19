@@ -2,15 +2,15 @@ import Link from "next/link";
 
 export default function Home() {
   return (
-    <main className="text-texto-ligth flex flex-col gap-4 pattern-reverse overflow-hidden absolute top-0 left-0">
-      <div className="my-2 rounded-lg mx-auto p-6 relative overflow-hidden pattern">
+    <main className="text-texto-ligth flex flex-col gap-2 pattern-reverse ">
+      <div className="my-2 rounded-lg mx-auto p-6 pattern">
         <p>Bienvenido!</p>
         <div className="flex flex-row items-center justify-end gap-1">
           <p>Esto es </p>
-          <h1 className=" inline italic  text-3xl">StyleFlow</h1>
+          <h1 className=" inline italic text-2xl">StyleFlow</h1>
         </div>
       </div>
-      <div className="bg-secundario-ligth rounded mx-auto p-6 pattern flex flex-col gap-2">
+      <div className="bg-secundario-ligth rounded mx-auto p-4 pattern flex flex-col gap-2 text-[.8rem]">
         <p>
           StyleFlow es una aplicación en etapa de desarrollo, orientada al
           manejo de stock, carga y facturación de productos y ventas
