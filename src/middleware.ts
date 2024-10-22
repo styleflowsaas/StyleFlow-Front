@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 export function middleware(req: NextRequest) {
   const pathname = req.nextUrl.pathname;
   const token = req.cookies.get("token-sf");
-  if (!token) {
+  if (!token && pathname !== "/Sign") {
     return NextResponse.redirect(new URL("/Sign", req.url));
   }
 
@@ -20,5 +20,6 @@ export const config = {
     "/Productos/:path*",
     "/Proveedores/:path*",
     "/Ventas/:path*",
+    "/Sign/:path*",
   ],
 };
