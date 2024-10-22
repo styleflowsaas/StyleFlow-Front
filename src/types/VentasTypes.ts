@@ -25,6 +25,7 @@ export interface ProductInterface {
   colores: string[];
   codeBar: string;
   discount?: number;
+  cantidadVenta?: number;
 }
 
 export interface InvoiceInterface {

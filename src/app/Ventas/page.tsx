@@ -113,7 +113,7 @@ export default function GeneradorFactura() {
         ...invoice,
         products: invoice.products.map((product) =>
           product.id === id
-            ? { ...product, stock: product.stock - value }
+            ? { ...product, stock: product.stock - value, cantidadVenta: value }
             : product
         ),
       }));
@@ -329,11 +329,11 @@ export default function GeneradorFactura() {
           <table className="w-full border-collapse">
             <thead>
               <tr>
-                <th className="border text-[.5rem]">Código de Barras</th>
                 <th className="border text-[.5rem]">Producto</th>
                 <th className="border text-[.5rem]">Precio</th>
                 <th className="border text-[.5rem]">Cantidad</th>
-                <th className="border text-[.5rem]">Descuento</th>
+                <th className="border text-[.5rem]">Descuento %</th>
+                <th className="border text-[.5rem]">Subtotal</th>
                 <th className="border text-[.5rem]">Acciones</th>
               </tr>
             </thead>
@@ -341,17 +341,15 @@ export default function GeneradorFactura() {
               {invoices[currentInvoice].products.map((product) => (
                 <tr key={product.id}>
                   <td className="border text-center text-[.5rem] p-[0px]">
-                    {product.codeBar}
-                  </td>
-                  <td className="border text-center text-[.5rem] p-[0px]">
                     {product.name}
                   </td>
                   <td className="border text-center text-[.5rem] p-[0px]">
                     ${product.price}
                   </td>
-                  <td className="border text-center text-[.5rem] w-[5vw]">
+                  <td className="border text-center text-[.5rem] w-[7vw] text-black">
                     <input
                       type="number"
+                      value={product.cantidadVenta || 1}
                       onChange={(e) =>
                         handleCantidad(product.id, Number(e.target.value))
                       }
@@ -359,7 +357,7 @@ export default function GeneradorFactura() {
                       className="w-full text-center p-[0px] text-[.5rem]"
                     />
                   </td>
-                  <td className="border text-center text-[.5rem] w-[5vw]">
+                  <td className="border text-center text-[.5rem] w-[8vw] text-black">
                     <input
                       type="number"
                       onChange={(e) =>
@@ -367,6 +365,14 @@ export default function GeneradorFactura() {
                       }
                       className="w-full text-center p-[0px] text-[.5rem]"
                     />
+                  </td>
+                  <td className="border text-center">
+                    $
+                    {product.cantidadVenta
+                      ? product.price *
+                        (1 - (product.discount ?? 0) / 100) *
+                        product.cantidadVenta
+                      : product.price}
                   </td>
                   <td className="border text-center">
                     <button

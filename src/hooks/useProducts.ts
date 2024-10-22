@@ -89,7 +89,7 @@ export const mockProducts: IProduct[] = [
 ];
 
 export const useProducts = () => {
-  const [products, setProducts] = useState<IProduct[]>();
+  const [products, setProducts] = useState<IProduct[]>(mockProducts);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {

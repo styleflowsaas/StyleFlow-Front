@@ -2,8 +2,6 @@ import { Cliente } from "@/types/VentasTypes";
 import { useEffect, useState } from "react";
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 export const useClients = () => {
-  const [clients, setClients] = useState<Cliente[]>();
-  const [error, setError] = useState<string | null>(null);
   const clientesMock: Cliente[] = [
     {
       id: "1",
@@ -24,6 +22,8 @@ export const useClients = () => {
       phone: "phone",
     },
   ];
+  const [clients, setClients] = useState<Cliente[]>(clientesMock);
+  const [error, setError] = useState<string | null>(null);
   useEffect(() => {
     const fetchClientes = async () => {
       try {
